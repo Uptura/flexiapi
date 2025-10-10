@@ -316,7 +316,7 @@ PHP;
         }
     }
     
-    private function loadConfig(): array
+    protected function loadConfig(): array
     {
         $configFile = 'config/config.php';
         if (file_exists($configFile)) {

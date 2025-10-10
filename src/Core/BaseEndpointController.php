@@ -5,18 +5,19 @@ namespace FlexiAPI\Core;
 use FlexiAPI\Utils\Response;
 use FlexiAPI\Utils\Validator;
 use FlexiAPI\Utils\Encryptor;
+use FlexiAPI\DB\MySQLAdapter;
 use PDO;
 
 abstract class BaseEndpointController
 {
-    protected PDO $db;
+    protected MySQLAdapter $db;
     protected array $config;
     protected string $tableName;
     protected array $fillable = [];
     protected array $encrypted = []; // Fields that should be encrypted
     protected array $hidden = ['password']; // Fields to hide in responses
     
-    public function __construct(PDO $db, array $config)
+    public function __construct(MySQLAdapter $db, array $config)
     {
         $this->db = $db;
         $this->config = $config;
@@ -86,6 +87,89 @@ abstract class BaseEndpointController
             
         } catch (\Exception $e) {
             Response::json(false, 'Failed to retrieve records', null, 500, [
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
+    
+    /**
+     * GET /{endpoint}/search/{column}?q={query} - Search by specific column
+     */
+    public function searchByColumn(): void
+    {
+        try {
+            // Get column from URL parameter
+            $column = $_GET['column'] ?? '';
+            $query = $_GET['q'] ?? '';
+            
+            // Pagination parameters
+            $page = (int)($_GET['page'] ?? 1);
+            $limit = (int)($_GET['limit'] ?? 20);
+            $sort = $_GET['sort'] ?? 'id';
+            $order = $_GET['order'] ?? 'DESC';
+            
+            $offset = ($page - 1) * $limit;
+            
+            // Validate column exists and is searchable
+            if (empty($column)) {
+                Response::json(false, 'Column parameter is required', null, 400);
+                return;
+            }
+            
+            if (empty($query)) {
+                Response::json(false, 'Query parameter (q) is required', null, 400);
+                return;
+            }
+            
+            if (!in_array($column, $this->fillable)) {
+                Response::json(false, "Column '{$column}' is not searchable", null, 400, [
+                    'available_columns' => $this->fillable
+                ]);
+                return;
+            }
+            
+            // Build search query
+            $whereClause = "WHERE `{$column}` LIKE :query";
+            $params = ['query' => "%{$query}%"];
+            
+            // Count total records
+            $countSql = "SELECT COUNT(*) FROM `{$this->tableName}` {$whereClause}";
+            $countStmt = $this->db->prepare($countSql);
+            $countStmt->execute($params);
+            $total = $countStmt->fetchColumn();
+            
+            // Get records
+            $sql = "SELECT * FROM `{$this->tableName}` {$whereClause} ORDER BY `{$sort}` {$order} LIMIT :limit OFFSET :offset";
+            $stmt = $this->db->prepare($sql);
+            
+            foreach ($params as $key => $value) {
+                $stmt->bindValue($key, $value);
+            }
+            $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+            $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+            
+            $stmt->execute();
+            $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            // Process records (decrypt, hide fields)
+            $records = array_map([$this, 'processRecord'], $records);
+            
+            Response::json(true, "Search results for '{$column}' containing '{$query}'", [
+                'data' => $records,
+                'search' => [
+                    'column' => $column,
+                    'query' => $query
+                ],
+                'pagination' => [
+                    'page' => $page,
+                    'limit' => $limit,
+                    'total' => $total,
+                    'pages' => ceil($total / $limit)
+                ]
+            ]);
+            
+        } catch (\Exception $e) {
+            Response::json(false, 'Failed to search records', null, 500, [
                 'error' => $e->getMessage()
             ]);
         }

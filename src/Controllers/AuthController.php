@@ -6,24 +6,24 @@ use FlexiAPI\Services\JWTAuth;
 use FlexiAPI\Utils\Response;
 use FlexiAPI\Utils\Validator;
 use FlexiAPI\Utils\Encryptor;
+use FlexiAPI\DB\MySQLAdapter;
 use PDO;
 
 class AuthController
 {
-    private PDO $db;
+    private MySQLAdapter $db;
     private array $config;
     private ?JWTAuth $jwtAuth = null;
 
-    public function __construct(PDO $db, array $config)
+    public function __construct(MySQLAdapter $db, array $config)
     {
         $this->db = $db;
         $this->config = $config;
         
         if (isset($config['jwt'])) {
             $this->jwtAuth = new JWTAuth(
-                $config['jwt']['secret'],
-                $config['jwt']['algorithm'] ?? 'HS256',
-                $config['jwt']['expiration'] ?? 3600
+                $config,
+                $this->db
             );
         }
     }
@@ -37,53 +37,35 @@ class AuthController
         try {
             $input = $this->getJsonInput();
             
-            // Validate secret key
-            $secretKey = $input['secret_key'] ?? '';
-            if ($secretKey !== $this->config['api']['secret_key']) {
-                Response::json(false, 'Invalid secret key', null, 403);
+            // Validate secret key against JWT secret
+            $secret = $input['secret'] ?? '';
+            if ($secret !== $this->config['jwt']['secret']) {
+                Response::json(false, 'Invalid secret', null, 403);
                 return;
             }
 
-            // Validate required fields
-            $validator = new Validator();
-            $errors = $validator->validate($input, [
-                'user_id' => 'required|integer',
-                'name' => 'required|min:3|max:50'
-            ]);
-
-            if (!empty($errors)) {
-                Response::json(false, 'Validation failed', null, 400, ['errors' => $errors]);
-                return;
-            }
-
-            // Generate API key
-            $apiKey = $this->generateApiKey();
-            $hashedKey = hash('sha256', $apiKey);
-
-            // Create api_keys table if it doesn't exist
-            $this->createApiKeysTable();
-
-            // Insert API key into database
-            $stmt = $this->db->prepare("
-                INSERT INTO api_keys (user_id, name, api_key, created_at) 
-                VALUES (:user_id, :name, :api_key, NOW())
-            ");
-
-            $stmt->execute([
-                'user_id' => $input['user_id'],
-                'name' => $input['name'],
-                'api_key' => $hashedKey
-            ]);
-
-            Response::json(true, 'API key generated successfully', [
+            // Generate new auth keys (no user_id required for this endpoint)
+            $apiKey = bin2hex(random_bytes(32));
+            $accessToken = $this->jwtAuth->generateToken([
+                'id' => 'api_user',
+                'email' => 'api@system.local',
+                'username' => 'api_user',
+                'roles' => ['api'],
                 'api_key' => $apiKey,
-                'user_id' => $input['user_id'],
-                'name' => $input['name'],
-                'expires_at' => null // Never expires unless manually revoked
-            ], 201);
+                'issued_at' => time(),
+                'purpose' => 'api_access'
+            ]);
+
+            Response::json(true, 'Auth keys generated successfully', [
+                'api_key' => $apiKey,
+                'access_token' => $accessToken,
+                'token_type' => 'Bearer',
+                'expires_in' => $this->config['jwt']['expiration'] ?? 3600,
+                'usage' => 'Include as Auth-x: Bearer {access_token} in your API requests'
+            ]);
 
         } catch (\Exception $e) {
-            Response::json(false, 'Failed to generate API key', null, 500, [
+            Response::json(false, 'Failed to generate keys', null, 500, [
                 'error' => $e->getMessage()
             ]);
         }
@@ -162,10 +144,10 @@ class AuthController
             }
 
             $headers = getallheaders();
-            $authHeader = $headers['Authorization'] ?? '';
+            $authHeader = $headers['Auth-x'] ?? $headers['auth-x'] ?? '';
 
             if (!str_starts_with($authHeader, 'Bearer ')) {
-                Response::json(false, 'Invalid authorization header', null, 401);
+                Response::json(false, 'Invalid auth header', null, 401);
                 return;
             }
 

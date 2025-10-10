@@ -9,14 +9,37 @@ use FlexiAPI\CLI\Commands\GeneratePostmanCommand;
 use FlexiAPI\CLI\Commands\ExportSqlCommand;
 use FlexiAPI\CLI\Commands\ServeCommand;
 use FlexiAPI\CLI\Commands\ListEndpointsCommand;
+use FlexiAPI\CLI\Commands\ConfigureCorsCommand;
 
 class Console
 {
     private array $commands = [];
+    private string $commandPrefix;
     
     public function __construct()
     {
         $this->registerCommands();
+        $this->commandPrefix = $this->detectCommandPrefix();
+    }
+    
+    private function detectCommandPrefix(): string
+    {
+        // Check if running as global Composer package
+        global $argv;
+        $scriptPath = $argv[0] ?? '';
+        
+        // If script contains 'flexiapi' without 'bin/', it's likely global Composer
+        if (strpos($scriptPath, 'flexiapi') !== false && strpos($scriptPath, 'bin/') === false) {
+            return 'flexiapi';
+        }
+        
+        // Check if vendor/bin/flexiapi exists (local Composer install)
+        if (file_exists('vendor/bin/flexiapi') || file_exists('../vendor/bin/flexiapi')) {
+            return 'vendor/bin/flexiapi';
+        }
+        
+        // Default to development mode
+        return 'php bin/flexiapi';
     }
     
     private function registerCommands(): void
@@ -30,6 +53,7 @@ class Console
             'generate:postman' => GeneratePostmanCommand::class,
             'export:sql' => ExportSqlCommand::class,
             'serve' => ServeCommand::class,
+            'configure:cors' => ConfigureCorsCommand::class,
             
             // Aliases
             'init' => SetupCommand::class,
@@ -45,6 +69,8 @@ class Console
             'sql' => ExportSqlCommand::class,
             'server' => ServeCommand::class,
             'start' => ServeCommand::class,
+            'cors' => ConfigureCorsCommand::class,
+            'config:cors' => ConfigureCorsCommand::class,
             
             // Special cases
             'help' => null,
@@ -106,18 +132,18 @@ class Console
   | |   | |\\___/_/\\_\\|_|/_/  \\_\\|_|    |___|
   |_|   |_|                               
                                           
-FlexiAPI CLI v2.0.0 - Rapid API Development Framework
+FlexiAPI CLI v3.0.0 - Rapid API Development Framework
 ", 'info');
 
         $this->output("USAGE:", 'header');
-        $this->output("  flexiapi <command> [options] [arguments]");
+        $this->output("  {$this->commandPrefix} <command> [options] [arguments]");
         $this->output("");
         
         $this->output("🚀 QUICK START:", 'header');
-        $this->output("  1. flexiapi setup              # Configure your API");
-        $this->output("  2. flexiapi create users       # Create first endpoint");
-        $this->output("  3. flexiapi serve              # Start development server");
-        $this->output("  4. flexiapi postman            # Generate Postman collection");
+        $this->output("  1. {$this->commandPrefix} setup              # Configure your API");
+        $this->output("  2. {$this->commandPrefix} create users       # Create first endpoint");
+        $this->output("  3. {$this->commandPrefix} serve              # Start development server");
+        $this->output("  4. {$this->commandPrefix} postman            # Generate Postman collection");
         $this->output("");
         
         $this->output("📝 ENDPOINT MANAGEMENT:", 'header');
@@ -135,6 +161,7 @@ FlexiAPI CLI v2.0.0 - Rapid API Development Framework
         $this->output("⚙️  CONFIGURATION & SETUP:", 'header');
         $configCommands = [
             'setup' => 'Interactive setup (database, auth, rate limiting)',
+            'configure:cors' => 'Configure CORS (Cross-Origin Resource Sharing) policy',
             'init' => 'Alias for setup command',
         ];
         
@@ -169,6 +196,7 @@ FlexiAPI CLI v2.0.0 - Rapid API Development Framework
             'postman, pm' => 'generate:postman',
             'export, sql' => 'export:sql',
             'server, start' => 'serve',
+            'cors, config:cors' => 'configure:cors',
         ];
         
         foreach ($aliases as $alias => $original) {
@@ -177,16 +205,16 @@ FlexiAPI CLI v2.0.0 - Rapid API Development Framework
         $this->output("");
         
         $this->output("📋 EXAMPLES:", 'header');
-        $this->output("  flexiapi create users          # Create users endpoint");
-        $this->output("  flexiapi update users          # Modify users endpoint");
-        $this->output("  flexiapi list --details        # Show detailed endpoint info");
-        $this->output("  flexiapi serve --port=9000     # Start server on port 9000");
-        $this->output("  flexiapi export --data         # Export SQL with sample data");
+        $this->output("  {$this->commandPrefix} create users          # Create users endpoint");
+        $this->output("  {$this->commandPrefix} update users          # Modify users endpoint");
+        $this->output("  {$this->commandPrefix} list --details        # Show detailed endpoint info");
+        $this->output("  {$this->commandPrefix} serve --port=9000     # Start server on port 9000");
+        $this->output("  {$this->commandPrefix} export --data         # Export SQL with sample data");
         $this->output("");
         
         $this->output("ℹ️  MORE INFO:", 'header');
-        $this->output("  flexiapi <command> --help      # Get help for specific command");
-        $this->output("  flexiapi version               # Show version information");
+        $this->output("  {$this->commandPrefix} <command> --help      # Get help for specific command");
+        $this->output("  {$this->commandPrefix} version               # Show version information");
         $this->output("  Documentation: https://github.com/flexiapi/framework");
         $this->output("");
     }
@@ -226,7 +254,7 @@ FlexiAPI CLI v2.0.0 - Rapid API Development Framework
   | |   | |\\___/_/\\_\\|_|/_/  \\_\\|_|    |___|
   |_|   |_|                               
                                           
-FlexiAPI CLI Framework v2.0.0
+FlexiAPI CLI Framework v3.0.0
 ", 'info');
         
         $this->output("📋 System Information:", 'header');

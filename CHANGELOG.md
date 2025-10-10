@@ -5,6 +5,64 @@ All notable changes to FlexiAPI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0] - 2025-10-10
+
+### 🚀 Major Features
+- **Field-Level Encryption** - AES-256-CBC encryption with CLI configuration for sensitive data
+- **Advanced Search & Pagination** - Full-text search, column-specific search, sorting, and pagination
+- **Dynamic CORS Configuration** - CLI-based CORS policy management with live updates
+- **Custom Authentication Headers** - Enhanced JWT with Auth-x header support
+- **Dynamic CLI Detection** - Automatically detects installation type (global, local, development)
+- **Enhanced Documentation** - Comprehensive README with examples for all features
+
+### 🔐 Security Enhancements
+- **Custom Auth-x Header** - Improved authentication with custom header detection
+- **Bearer Token Enhancement** - Robust token parsing and validation
+- **Enhanced Header Processing** - Comprehensive authentication header support for all HTTP methods
+- **Field Encryption CLI** - Interactive encryption configuration during endpoint updates
+
+### 📊 Query & Search Features
+- **Pagination Support** - `?page=1&limit=10` with response metadata
+- **Global Search** - `?search=query` across all searchable fields
+- **Column Search** - `/search/{column}?q=value` for specific field queries
+- **Sorting** - `?sort=field&order=ASC/DESC` for result ordering
+- **Combined Queries** - Support for multiple query parameters simultaneously
+
+### 🌐 CORS Management
+- **Interactive CORS CLI** - `flexiapi configure:cors` command
+- **Dynamic Configuration** - Origins, methods, headers, credentials, max-age
+- **Live Updates** - Automatic index.php updates with fallback support
+- **Multiple Aliases** - `cors`, `config:cors` command shortcuts
+
+### 🔧 CLI Improvements
+- **Smart Command Detection** - Shows correct command prefix (flexiapi vs vendor/bin/flexiapi vs php bin/flexiapi)
+- **Enhanced Help System** - Context-aware help with proper command examples
+- **New Commands** - `configure:cors` with full CORS management
+- **Improved Aliases** - More intuitive command shortcuts
+
+### 🛠️ Development Experience
+- **Auto-Detection** - Framework automatically detects installation context
+- **Debug File Cleanup** - Removed development test files, added to .gitignore
+- **Enhanced Error Handling** - Better error messages and validation
+- **Comprehensive Examples** - Full CRUD examples with all new features
+
+### 📚 Documentation Updates
+- **Complete README Overhaul** - Comprehensive documentation with all v3.0.0 features
+- **Deployment Guide Updates** - v3.0.0 specific deployment instructions
+- **API Examples** - Complete examples for all HTTP methods with authentication
+- **Feature Documentation** - Detailed guides for encryption, search, CORS, and authentication
+
+### 🔄 Breaking Changes
+- **Auth Header Change** - Default authentication now uses `Auth-x` header instead of `Authorization`
+- **GET Authentication** - All GET endpoints now require authentication by default
+- **CLI Output Format** - Dynamic command prefix detection changes help text
+
+### 🐛 Bug Fixes
+- **PUT Method Authentication** - Fixed authentication header detection for PUT requests
+- **Bearer Token Parsing** - Improved token format validation and parsing
+- **CORS Header Handling** - Fixed CORS header configuration and application
+- **CLI Command Detection** - Fixed command prefix detection across different installation types
+
 ## [2.0.0] - 2025-10-10
 
 ### Added

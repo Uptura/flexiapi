@@ -5,12 +5,13 @@ namespace FlexiAPI\Core;
 use FlexiAPI\Utils\Response;
 use FlexiAPI\Services\JWTAuth;
 use FlexiAPI\Middleware\RateLimitMiddleware;
+use FlexiAPI\DB\MySQLAdapter;
 use PDO;
 
 class FlexiAPI
 {
     private array $config;
-    private PDO $db;
+    private MySQLAdapter $db;
     private Router $router;
     private ?JWTAuth $jwtAuth = null;
 
@@ -54,18 +55,7 @@ class FlexiAPI
     private function initializeDatabase(): void
     {
         try {
-            $dsn = "mysql:host={$this->config['database']['host']};port={$this->config['database']['port']};dbname={$this->config['database']['database']};charset={$this->config['database']['charset']}";
-            
-            $this->db = new PDO(
-                $dsn,
-                $this->config['database']['username'],
-                $this->config['database']['password'],
-                [
-                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                    PDO::ATTR_EMULATE_PREPARES => false
-                ]
-            );
+            $this->db = new MySQLAdapter($this->config['database']);
         } catch (\PDOException $e) {
             Response::json(false, 'Database connection failed', null, 500, [
                 'error' => $e->getMessage()
@@ -78,9 +68,8 @@ class FlexiAPI
     {
         if (isset($this->config['jwt'])) {
             $this->jwtAuth = new JWTAuth(
-                $this->config['jwt']['secret'],
-                $this->config['jwt']['algorithm'] ?? 'HS256',
-                $this->config['jwt']['expiration'] ?? 3600
+                $this->config,
+                $this->db
             );
         }
     }
@@ -90,24 +79,22 @@ class FlexiAPI
         // Load authentication routes
         $this->loadAuthRoutes();
         
-        // Load generated endpoint routes from api/routes directory
-        $routesDir = 'api/routes';
-        if (is_dir($routesDir)) {
-            foreach (glob($routesDir . '/*.php') as $routeFile) {
-                $routes = require $routeFile;
-                if (is_array($routes)) {
-                    foreach ($routes as $route) {
-                        $this->router->addRoute(
-                            $route['method'],
-                            $route['path'],
-                            $route['controller'],
-                            $route['action'],
-                            $route['auth'] ?? false
-                        );
-                    }
-                }
-            }
-        }
+        // Load generated endpoint routes manually
+        // Users routes
+        $this->router->addRoute('GET', 'v1/users', 'FlexiAPI\\Endpoints\\UsersController', 'index', true);
+        $this->router->addRoute('GET', 'v1/users/search/{column}', 'FlexiAPI\\Endpoints\\UsersController', 'searchByColumn', true);
+        $this->router->addRoute('POST', 'v1/users', 'FlexiAPI\\Endpoints\\UsersController', 'store', true);
+        $this->router->addRoute('GET', 'v1/users/{id}', 'FlexiAPI\\Endpoints\\UsersController', 'show', true);
+        $this->router->addRoute('PUT', 'v1/users/{id}', 'FlexiAPI\\Endpoints\\UsersController', 'update', true);
+        $this->router->addRoute('DELETE', 'v1/users/{id}', 'FlexiAPI\\Endpoints\\UsersController', 'destroy', true);
+        
+        // Products routes
+        $this->router->addRoute('GET', 'v1/products', 'FlexiAPI\\Endpoints\\ProductsController', 'index', true);
+        $this->router->addRoute('GET', 'v1/products/search/{column}', 'FlexiAPI\\Endpoints\\ProductsController', 'searchByColumn', true);
+        $this->router->addRoute('POST', 'v1/products', 'FlexiAPI\\Endpoints\\ProductsController', 'store', true);
+        $this->router->addRoute('GET', 'v1/products/{id}', 'FlexiAPI\\Endpoints\\ProductsController', 'show', true);
+        $this->router->addRoute('PUT', 'v1/products/{id}', 'FlexiAPI\\Endpoints\\ProductsController', 'update', true);
+        $this->router->addRoute('DELETE', 'v1/products/{id}', 'FlexiAPI\\Endpoints\\ProductsController', 'destroy', true);
     }
 
     private function loadAuthRoutes(): void
@@ -123,7 +110,7 @@ class FlexiAPI
     {
         $origins = $this->config['cors']['origins'] ?? ['*'];
         $methods = $this->config['cors']['methods'] ?? ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'];
-        $headers = $this->config['cors']['headers'] ?? ['Content-Type', 'Authorization', 'X-API-Key'];
+        $headers = $this->config['cors']['headers'] ?? ['Content-Type', 'Auth-x', 'X-API-Key'];
 
         $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
         if (in_array('*', $origins) || in_array($origin, $origins)) {
@@ -146,7 +133,7 @@ class FlexiAPI
         return $rateLimiter->handle();
     }
 
-    public function getDatabase(): PDO
+    public function getDatabase(): MySQLAdapter
     {
         return $this->db;
     }

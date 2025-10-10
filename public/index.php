@@ -5,9 +5,24 @@ require_once __DIR__ . '/../vendor/autoload.php';
 use FlexiAPI\Core\FlexiAPI;
 
 // Handle CORS
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, Authorization, X-API-Key');
+// Load CORS configuration
+$corsConfigPath = __DIR__ . '/../config/cors.php';
+if (file_exists($corsConfigPath)) {
+    $corsConfig = require $corsConfigPath;
+    
+    // Set CORS headers
+    header('Access-Control-Allow-Origin: ' . implode(', ', $corsConfig['origins']));
+    header('Access-Control-Allow-Methods: ' . implode(', ', $corsConfig['methods']));
+    header('Access-Control-Allow-Headers: ' . implode(', ', $corsConfig['headers']));
+    header('Access-Control-Allow-Credentials: ' . ($corsConfig['credentials'] ? 'true' : 'false'));
+    header('Access-Control-Max-Age: ' . $corsConfig['max_age']);
+} else {
+    // Fallback CORS headers
+    header('Access-Control-Allow-Origin: *');
+    header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+    header('Access-Control-Allow-Headers: Content-Type, Authorization, X-API-Key, Auth-x');
+}
+
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);

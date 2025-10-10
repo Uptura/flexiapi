@@ -288,6 +288,25 @@ docker/volumes/
 .circleci/
 
 # ================================
+# Debug & Test Files
+# ================================
+
+# Debug files
+public/debug_*.php
+public/test_*.php
+public/put_test.php
+public/test.html
+debug.log
+debug_*.log
+
+# Test and development files
+test_*.php
+debug_*.php
+playground/
+temp/
+*.tmp
+
+# ================================
 # Performance & Monitoring
 # ================================
 

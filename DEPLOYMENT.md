@@ -1,6 +1,6 @@
-# FlexiAPI Deployment & Publishing Guide
+# FlexiAPI v3.0.0 Deployment & Publishing Guide
 
-This guide covers how to deploy, publish, and distribute FlexiAPI framework.
+This comprehensive guide covers deployment, publishing, and distribution of FlexiAPI Framework v3.0.0 with all new features including encryption, advanced search, CORS configuration, and dynamic CLI.
 
 ## 📦 Publishing to Packagist (Composer)
 
@@ -16,14 +16,14 @@ This guide covers how to deploy, publish, and distribute FlexiAPI framework.
 ```bash
 # Ensure all files are committed
 git add .
-git commit -m "Prepare for v2.0.0 release"
+git commit -m "Prepare for v3.0.0 release - Complete framework with encryption, search, CORS"
 
 # Create a release tag
-git tag -a v2.0.0 -m "FlexiAPI v2.0.0 - Complete Framework Release"
+git tag -a v3.0.0 -m "FlexiAPI v3.0.0 - Advanced Features: Encryption, Search, CORS, Dynamic CLI"
 
 # Push to GitHub
 git push origin main
-git push origin v2.0.0
+git push origin v3.0.0
 ```
 
 #### 2. Validate Package Structure
@@ -32,11 +32,15 @@ git push origin v2.0.0
 # Test composer.json syntax
 composer validate
 
-# Test autoloading
+# Test autoloading (includes new CORS command)
 composer dump-autoload
 
 # Verify package installation locally
 composer install --no-dev
+
+# Test new CLI features
+flexiapi --version  # Should show v3.0.0
+flexiapi cors       # Test CORS configuration
 ```
 
 #### 3. Submit to Packagist
@@ -53,47 +57,58 @@ composer install --no-dev
 
 ```bash
 # Test global installation
-composer global require uptura/flexiapi
+composer global require uptura-official/flexiapi
 
 # Test project installation
-composer require uptura/flexiapi
+composer require uptura-official/flexiapi
 
-# Verify CLI availability
-vendor/bin/flexiapi --version
+# Verify CLI availability and new v3.0.0 features
+vendor/bin/flexiapi --version       # Should show v3.0.0
+vendor/bin/flexiapi cors            # Test CORS configuration
+vendor/bin/flexiapi list            # Test endpoint listing
 ```
 
-## 🚀 Installation Methods
+## 🚀 Installation Methods for v3.0.0
 
-### Method 1: Global Installation (Recommended for CLI tool)
+### Method 1: Global Installation (Recommended)
 
 ```bash
 # Install globally
-composer global require uptura/flexiapi
+composer global require uptura-official/flexiapi
 
 # Make sure ~/.composer/vendor/bin is in your PATH
 export PATH="$PATH:$HOME/.composer/vendor/bin"
 
-# Use from anywhere
-flexiapi setup
-flexiapi create users
+# Use from anywhere with dynamic CLI detection
+flexiapi setup                      # Auto-detects global installation
+flexiapi create users               # Creates endpoints with encryption support
+flexiapi configure:cors             # New v3.0.0 CORS configuration
 ```
 
 ### Method 2: Project-specific Installation
 
 ```bash
 # Add to existing project
-composer require uptura/flexiapi
+composer require uptura-official/flexiapi
 
-# Use with vendor/bin prefix
-vendor/bin/flexiapi setup
-vendor/bin/flexiapi create posts
+# Use with vendor/bin prefix (automatically detected)
+vendor/bin/flexiapi setup           # CLI shows correct prefix
+vendor/bin/flexiapi create posts    # Advanced endpoint creation
+vendor/bin/flexiapi cors            # CORS configuration
 ```
 
-### Method 3: Direct Download
+### Method 3: Development Installation
 
 ```bash
-# Clone repository
+# Clone repository for development
 git clone https://github.com/Uptura/flexiapi.git
+cd flexiapi
+composer install
+
+# Development mode (shows php bin/flexiapi in help)
+php bin/flexiapi setup
+php bin/flexiapi create:endpoint products --encrypt
+```
 cd flexiapi
 
 # Install dependencies

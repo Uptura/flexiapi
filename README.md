@@ -1,318 +1,393 @@
-# FlexiAPI Framework v2.0.0
+# 🚀 FlexiAPI Framework v3.0.0
 
-🚀 **The Complete Rapid API Development Framework**
+[![Latest Version](https://img.shields.io/packagist/v/uptura-official/flexiapi.svg)](https://packagist.org/packages/uptura-official/flexiapi)
+[![PHP Version](https://img.shields.io/packagist/php-v/uptura-official/flexiapi.svg)](https://packagist.org/packages/uptura-official/flexiapi)
+[![License](https://img.shields.io/packagist/l/uptura-official/flexiapi.svg)](https://github.com/Uptura/flexiapi/blob/main/LICENSE)
 
-FlexiAPI is a powerful CLI-based framework that allows you to create full-featured REST APIs in minutes. Build endpoints, generate documentation, and deploy with zero configuration.
+**FlexiAPI** is a powerful, zero-configuration CLI framework for rapid REST API development. Build production-ready APIs with authentication, encryption, pagination, and CORS in minutes, not hours.
 
-## ✨ Features
+## 🌟 Key Features
 
-- **🎯 Zero-Configuration Setup** - Get started in seconds
-- **⚡ Rapid Endpoint Creation** - Create full CRUD APIs with one command
-- **🔄 Interactive Updates** - Modify endpoints with guided prompts
-- **📚 Auto-Documentation** - Generate Postman collections automatically
-- **🖥️ Built-in Dev Server** - Integrated development server with logging
-- **🛡️ Security Built-in** - Rate limiting, authentication, input validation
-- **📊 Smart Analytics** - Endpoint monitoring and performance insights
-- **🔧 Developer Tools** - SQL export, data generation, and more
+- 🎯 **Zero Configuration** - Get started immediately without complex setup
+- 🔐 **Built-in Authentication** - JWT with custom headers (Auth-x)
+- 🛡️ **Field-Level Encryption** - AES-256-CBC encryption for sensitive data
+- 📊 **Advanced Querying** - Pagination, search, filtering, and sorting
+- 🌐 **Dynamic CORS** - CLI-configurable CORS policies
+- ⚡ **Rapid Development** - Create full CRUD APIs in seconds
+- 🔧 **Flexible CLI** - Works in development and production environments
+- 📦 **Easy Deployment** - Composer-ready package management
+
+## 📦 Installation
+
+### Global Installation (Recommended)
+```bash
+composer global require uptura-official/flexiapi
+flexiapi setup
+```
+
+### Local Installation
+```bash
+composer require uptura-official/flexiapi
+vendor/bin/flexiapi setup
+```
+
+### Development Installation
+```bash
+git clone https://github.com/Uptura/flexiapi.git
+cd flexiapi
+composer install
+php bin/flexiapi setup
+```
 
 ## 🚀 Quick Start
 
-### Prerequisites
-- PHP 8.0+ with PDO, MySQLi extensions
-- MySQL/MariaDB database
-- Composer (for dependencies)
-
-### Installation
-
-1. **Clone and install:**
-   ```bash
-   git clone https://github.com/Uptura/flexiapi.git
-   cd flexiapi
-   composer install
-   ```
-
-2. **Setup the framework:**
-   ```bash
-   php bin/flexiapi setup
-   ```
-
-3. **Create your first endpoint:**
-   ```bash
-   php bin/flexiapi create users
-   ```
-
-4. **Start developing:**
-   ```bash
-   php bin/flexiapi serve
-   ```
-
-Your API is now running at `http://localhost:8000`! 🎉
-
-## 📖 Complete Command Reference
-
-### 🔧 Setup & Configuration
+### 1. Initialize Your API
 ```bash
-# Interactive setup wizard
-php bin/flexiapi setup
-php bin/flexiapi init                    # Alias
-
-# Show system information
-php bin/flexiapi version
+flexiapi setup
+# Configures database, authentication, and basic settings
 ```
 
-### 📝 Endpoint Management
+### 2. Create Your First Endpoint
 ```bash
-# Create new endpoint
-php bin/flexiapi create:endpoint users
-php bin/flexiapi create users            # Alias
-php bin/flexiapi new users               # Alias
-
-# Update existing endpoint
-php bin/flexiapi update:endpoint users
-php bin/flexiapi update users            # Alias
-php bin/flexiapi edit users              # Alias
-
-# List all endpoints
-php bin/flexiapi list:endpoints
-php bin/flexiapi list                    # Alias
-php bin/flexiapi ls                      # Alias
-
-# Show detailed endpoint info
-php bin/flexiapi list --details
-php bin/flexiapi ls --json               # JSON output
-php bin/flexiapi ls --csv                # CSV output
+flexiapi create:endpoint users
+# Interactive setup: define columns, data types, encryption
 ```
 
-### 📤 Export & Generation
+### 3. Start Development Server
 ```bash
-# Generate Postman collection
-php bin/flexiapi generate:postman
-php bin/flexiapi postman                 # Alias
-php bin/flexiapi pm                      # Alias
-
-# Export unified SQL schema
-php bin/flexiapi export:sql
-php bin/flexiapi export                  # Alias
-php bin/flexiapi sql                     # Alias
-
-# Export with sample data
-php bin/flexiapi export:sql --data
-php bin/flexiapi export:sql --samples=100
+flexiapi serve
+# Launches PHP development server with your API
 ```
 
-### 🖥️ Development Server
+### 4. Test Your API
+Your API is immediately available with full CRUD operations:
+
 ```bash
-# Start development server
-php bin/flexiapi serve
-php bin/flexiapi server                  # Alias
-php bin/flexiapi start                   # Alias
+# List all users (with pagination)
+curl -H "Auth-x: Bearer YOUR_TOKEN" http://localhost:8000/api/v1/users
 
-# Custom host and port
-php bin/flexiapi serve --host=0.0.0.0 --port=9000
+# Create a new user
+curl -X POST -H "Auth-x: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"John Doe","email":"john@example.com"}' \
+  http://localhost:8000/api/v1/users
 
-# Enable verbose logging
-php bin/flexiapi serve --verbose
-php bin/flexiapi serve -v
+# Get specific user
+curl -H "Auth-x: Bearer YOUR_TOKEN" http://localhost:8000/api/v1/users/1
+
+# Update user
+curl -X PUT -H "Auth-x: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Jane Doe"}' \
+  http://localhost:8000/api/v1/users/1
+
+# Delete user
+curl -X DELETE -H "Auth-x: Bearer YOUR_TOKEN" http://localhost:8000/api/v1/users/1
 ```
 
-### 💡 Help & Documentation
+## 🔐 Authentication
+
+FlexiAPI uses JWT tokens with a custom `Auth-x` header for enhanced security.
+
+### Generate API Keys
 ```bash
-# Show all commands
-php bin/flexiapi help
-
-# Get help for specific command
-php bin/flexiapi create:endpoint --help
-php bin/flexiapi serve --help
+curl -X POST http://localhost:8000/api/v1/auth/generate_keys
 ```
 
-## 🎯 Workflow Examples
-
-### Creating a Blog API
-```bash
-# Setup the framework
-php bin/flexiapi setup
-
-# Create blog posts endpoint
-php bin/flexiapi create posts
-# Add: title (string), content (text), author_id (integer), published_at (datetime)
-
-# Create authors endpoint  
-php bin/flexiapi create authors
-# Add: name (string), email (string), bio (text)
-
-# Create categories endpoint
-php bin/flexiapi create categories
-# Add: name (string), description (text)
-
-# Generate Postman collection
-php bin/flexiapi postman
-
-# Start development server
-php bin/flexiapi serve --verbose
-```
-
-### E-commerce API Setup
-```bash
-# Products endpoint
-php bin/flexiapi create products
-# Add: name, description, price, category_id, stock_quantity, sku
-
-# Orders endpoint
-php bin/flexiapi create orders
-# Add: user_id, total_amount, status, order_date
-
-# Generate complete SQL schema
-php bin/flexiapi export:sql --data --samples=50
-
-# Test with built-in server
-php bin/flexiapi serve --port=8080
-```
-
-## 🛡️ Security Features
-
-### Rate Limiting
-FlexiAPI includes built-in rate limiting middleware:
-
-```php
-// Automatically configured during setup
-// Default: 100 requests per minute per IP
-// Customizable via config/config.php
-```
-
-### Authentication
-Multiple authentication methods supported:
-- **API Keys** - Simple key-based authentication
-- **JWT Tokens** - JSON Web Token support
-- **Session-based** - Traditional session authentication
-
-### Input Validation
-All endpoints include automatic:
-- Type validation
-- Required field checks
-- SQL injection prevention
-- XSS protection
-
-## 📊 API Endpoints
-
-Each created endpoint automatically provides:
-
-### Standard CRUD Operations
-```http
-GET    /api/{endpoint}           # List all records
-GET    /api/{endpoint}/{id}      # Get single record
-POST   /api/{endpoint}           # Create new record
-PUT    /api/{endpoint}/{id}      # Update record
-DELETE /api/{endpoint}/{id}      # Delete record
-```
-
-### Advanced Features
-```http
-GET    /api/{endpoint}?limit=10&offset=20    # Pagination
-GET    /api/{endpoint}?sort=name&order=desc  # Sorting
-GET    /api/{endpoint}?filter[name]=john     # Filtering
-GET    /api/{endpoint}?search=keyword        # Search
-```
-
-### Meta Endpoints
-```http
-GET    /api/health              # System health check
-GET    /api/schema/{endpoint}   # Endpoint schema
-GET    /api/stats               # Usage statistics
-```
-
-## 🔧 Configuration
-
-### Database Configuration
-```php
-// config/config.php
-return [
-    'database' => [
-        'host' => 'localhost',
-        'dbname' => 'your_database',
-        'username' => 'your_username',
-        'password' => 'your_password',
-        'charset' => 'utf8mb4'
-    ],
-    'rate_limiting' => [
-        'enabled' => true,
-        'requests_per_minute' => 100,
-        'storage' => 'file' // or 'memory'
-    ],
-    'authentication' => [
-        'method' => 'api_key', // 'api_key', 'jwt', 'session'
-        'required' => false
-    ]
-];
-```
-
-## 📚 Advanced Usage
-
-### Custom Methods
-Add custom business logic to any endpoint:
-
-```php
-// src/Custom/UserMethods.php
-class UserMethods {
-    public function login($userData) {
-        // Custom login logic
-    }
-    
-    public function resetPassword($email) {
-        // Password reset logic
-    }
+**Response:**
+```json
+{
+  "success": true,
+  "message": "API keys generated successfully",
+  "data": {
+    "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
+    "expires_at": "2025-10-11 22:00:00"
+  }
 }
+```
+
+### Use Authentication
+Include the `Auth-x` header in all authenticated requests:
+```bash
+curl -H "Auth-x: Bearer YOUR_TOKEN" http://localhost:8000/api/v1/users
+```
+
+## 🛡️ Field-Level Encryption
+
+Protect sensitive data with built-in AES-256-CBC encryption.
+
+### Configure Encryption
+```bash
+flexiapi update:endpoint users
+# Choose option to configure field encryption
+```
+
+### Automatic Encryption/Decryption
+```bash
+# Create user with encrypted field
+curl -X POST -H "Auth-x: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"John","ssn":"123-45-6789"}' \
+  http://localhost:8000/api/v1/users
+
+# SSN is automatically encrypted in database
+# SSN is automatically decrypted in API responses
+```
+
+## 📊 Advanced Querying
+
+### Pagination
+```bash
+# Get page 2 with 10 items per page
+curl -H "Auth-x: Bearer TOKEN" \
+  "http://localhost:8000/api/v1/users?page=2&limit=10"
+```
+
+### Search Across All Fields
+```bash
+# Search for "john" across all searchable fields
+curl -H "Auth-x: Bearer TOKEN" \
+  "http://localhost:8000/api/v1/users?search=john"
+```
+
+### Column-Specific Search
+```bash
+# Search by specific column
+curl -H "Auth-x: Bearer TOKEN" \
+  "http://localhost:8000/api/v1/users/search/email?q=gmail.com"
+```
+
+### Sorting
+```bash
+# Sort by name ascending
+curl -H "Auth-x: Bearer TOKEN" \
+  "http://localhost:8000/api/v1/users?sort=name&order=ASC"
+```
+
+### Combined Queries
+```bash
+# Complex query: search + pagination + sorting
+curl -H "Auth-x: Bearer TOKEN" \
+  "http://localhost:8000/api/v1/users?search=john&page=1&limit=5&sort=created_at&order=DESC"
+```
+
+### Response Format
+```json
+{
+  "success": true,
+  "message": "Records retrieved successfully",
+  "data": [
+    {
+      "id": 1,
+      "name": "John Doe",
+      "email": "john@example.com",
+      "created_at": "2025-10-10 12:00:00"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 25,
+    "pages": 3
+  }
+}
+```
+
+## 🌐 CORS Configuration
+
+Configure CORS policies dynamically via CLI.
+
+### Interactive CORS Setup
+```bash
+flexiapi configure:cors
+# Guides you through origins, methods, headers, and credentials
+```
+
+### Example CORS Configuration
+```bash
+Origins: https://yourdomain.com, https://app.yourdomain.com
+Methods: GET, POST, PUT, DELETE, OPTIONS
+Headers: Content-Type, Authorization, Auth-x
+Credentials: true
+Max Age: 86400 seconds
+```
+
+## 🔧 CLI Commands
+
+### Core Commands
+```bash
+flexiapi setup                    # Initial framework configuration
+flexiapi create:endpoint <name>   # Create new API endpoint
+flexiapi update:endpoint <name>   # Modify existing endpoint
+flexiapi list:endpoints           # Show all endpoints
+flexiapi configure:cors           # Configure CORS policy
+flexiapi serve [--port=8000]      # Start development server
+```
+
+### Generation Commands
+```bash
+flexiapi generate:postman         # Generate Postman collection
+flexiapi export:sql               # Export unified SQL schema
+```
+
+### Aliases
+```bash
+flexiapi create users    # Same as create:endpoint users
+flexiapi update users    # Same as update:endpoint users
+flexiapi list           # Same as list:endpoints
+flexiapi cors           # Same as configure:cors
+flexiapi serve          # Start development server
+```
+
+## 📁 Project Structure
+
+```
+your-api/
+├── config/
+│   ├── config.php          # Database & app configuration
+│   └── cors.php            # CORS policy settings
+├── endpoints/
+│   ├── UsersController.php # Generated endpoint controllers
+│   └── usersRoutes.php     # Generated route definitions
+├── sql/
+│   ├── users.sql           # Individual table schemas
+│   └── products.sql
+├── exports/
+│   └── FlexiAPI_Schema_Latest.sql  # Unified schema export
+├── public/
+│   └── index.php           # API entry point
+└── storage/
+    ├── logs/               # Application logs
+    └── cache/              # Rate limiting cache
+```
+
+## 🔄 API Response Format
+
+All API responses follow a consistent format:
+
+### Success Response
+```json
+{
+  "success": true,
+  "message": "Operation completed successfully",
+  "data": {
+    "id": 1,
+    "name": "John Doe"
+  }
+}
+```
+
+### Error Response
+```json
+{
+  "success": false,
+  "message": "Validation failed",
+  "errors": {
+    "email": "Email is required"
+  }
+}
+```
+
+### Paginated Response
+```json
+{
+  "success": true,
+  "message": "Records retrieved successfully",
+  "data": [...],
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 100,
+    "pages": 10
+  }
+}
+```
+
+## 🛠️ Development Workflow
+
+### 1. Create New Feature Endpoint
+```bash
+flexiapi create:endpoint products
+# Define columns: name, price, description
+# Configure encryption for sensitive pricing data
+```
+
+### 2. Update Existing Endpoint
+```bash
+flexiapi update:endpoint products
+# Add columns, modify types, configure encryption
+```
+
+### 3. Test API Endpoints
+```bash
+flexiapi generate:postman
+# Creates ready-to-use Postman collection
+```
+
+### 4. Export Database Schema
+```bash
+flexiapi export:sql
+# Creates unified SQL file for deployment
 ```
 
 ## 🚀 Deployment
 
 ### Production Setup
+1. Install on production server:
 ```bash
-# Generate production config
-php bin/flexiapi export:sql --production
-
-# Optimize for production
-composer install --no-dev --optimize-autoloader
-
-# Setup web server (Apache/Nginx)
-# Point document root to: public/
+composer global require uptura-official/flexiapi
 ```
 
-## 🔍 Troubleshooting
-
-### Common Issues
-
-**Database Connection Failed**
+2. Configure production database:
 ```bash
-# Check database credentials
+flexiapi setup
+# Enter production database credentials
+```
+
+3. Deploy your endpoint files:
+```bash
+# Copy your development files to production
+cp -r endpoints/ /var/www/your-api/
+cp -r sql/ /var/www/your-api/
+cp config/cors.php /var/www/your-api/config/
+```
+
+4. Import database schema:
+```bash
+mysql -u user -p database < exports/FlexiAPI_Schema_Latest.sql
+```
+
+## 🤝 Contributing
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+
+### Development Setup
+```bash
+git clone https://github.com/Uptura/flexiapi.git
+cd flexiapi
+composer install
 php bin/flexiapi setup
-# Verify MySQL service is running
-```
-
-**Permission Errors**
-```bash
-# Fix file permissions (Unix/Linux)
-chmod -R 755 public/
-chmod -R 777 storage/
-```
-
-### Debug Mode
-```bash
-# Enable verbose logging
-php bin/flexiapi serve --verbose
-
-# Check system status
-php bin/flexiapi version
-
-# Validate configuration
-php bin/flexiapi setup --validate
 ```
 
 ## 📄 License
 
-This project is licensed under the MIT License.
+FlexiAPI is open-sourced software licensed under the [MIT license](LICENSE).
+
+## 🔗 Links
+
+- 📖 [Documentation](https://github.com/Uptura/flexiapi#readme)
+- 🐛 [Issues](https://github.com/Uptura/flexiapi/issues)
+- 💬 [Discussions](https://github.com/Uptura/flexiapi/discussions)
+- 🌟 [Changelog](CHANGELOG.md)
+
+## 💡 Support
+
+- **Documentation**: Full guides and examples in this README
+- **Issues**: Report bugs on [GitHub Issues](https://github.com/Uptura/flexiapi/issues)
+- **Community**: Join discussions on [GitHub Discussions](https://github.com/Uptura/flexiapi/discussions)
 
 ---
 
-**Made with ❤️ by the Uptura Team**
-
-⭐ **Star us on GitHub** if FlexiAPI helps you build amazing APIs!
+**Made with ❤️ by [Uptura](https://uptura-tech.com)**
+- ✅ Postman collection generation
+- ✅ SQL export functionality

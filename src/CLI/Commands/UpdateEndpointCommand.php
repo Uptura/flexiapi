@@ -131,12 +131,13 @@ class UpdateEndpointCommand extends BaseCommand
             $this->output("  1. Add new column");
             $this->output("  2. Modify existing column");
             $this->output("  3. Remove column");
-            $this->output("  4. Regenerate controller");
-            $this->output("  5. View current schema");
-            $this->output("  6. Exit");
+            $this->output("  4. Configure encryption");
+            $this->output("  5. Regenerate controller");
+            $this->output("  6. View current schema");
+            $this->output("  7. Exit");
             $this->output("");
             
-            $choice = $this->ask("Select option (1-6)", "6");
+            $choice = $this->ask("Select option (1-7)", "7");
             
             switch ($choice) {
                 case '1':
@@ -149,12 +150,15 @@ class UpdateEndpointCommand extends BaseCommand
                     $this->removeColumn($endpointName, $currentColumns);
                     break;
                 case '4':
-                    $this->regenerateController($endpointName, $currentColumns);
+                    $this->configureEncryption($endpointName, $currentColumns);
                     break;
                 case '5':
-                    $this->viewSchema($endpointName);
+                    $this->regenerateController($endpointName, $currentColumns);
                     break;
                 case '6':
+                    $this->viewSchema($endpointName);
+                    break;
+                case '7':
                 default:
                     $this->output("\n✅ Update completed!", 'green');
                     return;
@@ -383,6 +387,12 @@ class UpdateEndpointCommand extends BaseCommand
     {
         $this->output("\n🔄 Regenerating controller", 'blue');
         
+        $controllerFile = "endpoints/" . ucfirst($endpointName) . "Controller.php";
+        
+        // Preserve existing encryption and hidden settings
+        $currentEncrypted = $this->getCurrentEncryptedFields($controllerFile);
+        $currentHidden = $this->getCurrentHiddenFields($controllerFile);
+        
         $fillable = array_column($currentColumns, 'name');
         $validationRules = [];
         
@@ -394,18 +404,22 @@ class UpdateEndpointCommand extends BaseCommand
             $validationRules[$column['name']] = implode('|', $rules);
         }
         
-        $controllerContent = $this->generateControllerContent($endpointName, $fillable, $validationRules);
+        $controllerContent = $this->generateControllerContent($endpointName, $fillable, $validationRules, $currentEncrypted, $currentHidden);
         
-        $controllerFile = "endpoints/" . ucfirst($endpointName) . "Controller.php";
         file_put_contents($controllerFile, $controllerContent);
         
         $this->output("✅ Controller regenerated successfully!", 'green');
+        if (!empty($currentEncrypted)) {
+            $this->output("🔐 Preserved encryption for: " . implode(', ', $currentEncrypted), 'yellow');
+        }
     }
     
-    private function generateControllerContent(string $endpointName, array $fillable, array $validationRules): string
+    private function generateControllerContent(string $endpointName, array $fillable, array $validationRules, array $encrypted = [], array $hidden = []): string
     {
         $className = ucfirst($endpointName) . 'Controller';
         $fillableStr = "'" . implode("', '", $fillable) . "'";
+        $encryptedStr = empty($encrypted) ? '[]' : "['" . implode("', '", $encrypted) . "']";
+        $hiddenStr = empty($hidden) ? '[]' : "['" . implode("', '", $hidden) . "']";
         
         $rulesArray = [];
         foreach ($validationRules as $field => $rules) {
@@ -431,6 +445,8 @@ class {$className} extends BaseEndpointController
 {
     protected string \$tableName = '{$endpointName}';
     protected array \$fillable = [{$fillableStr}];
+    protected array \$encrypted = {$encryptedStr};
+    protected array \$hidden = {$hiddenStr};
 
     protected function getValidationRules(): array
     {
@@ -456,5 +472,128 @@ PHP;
         
         $content = file_get_contents($sqlFile);
         $this->output($content, 'cyan');
+    }
+    
+    private function configureEncryption(string $endpointName, array $currentColumns): void
+    {
+        $this->output("\n🔐 Configure Field Encryption", 'blue');
+        $this->output("Select fields that should be encrypted when stored in the database:");
+        $this->output("");
+        
+        $controllerFile = "endpoints/" . ucfirst($endpointName) . "Controller.php";
+        $currentEncrypted = $this->getCurrentEncryptedFields($controllerFile);
+        
+        // Display current encrypted fields
+        if (!empty($currentEncrypted)) {
+            $this->output("Currently encrypted fields:", 'yellow');
+            foreach ($currentEncrypted as $field) {
+                $this->output("  ✓ {$field}", 'green');
+            }
+            $this->output("");
+        }
+        
+        // Show available fields
+        $availableFields = array_column($currentColumns, 'name');
+        $this->output("Available fields:", 'cyan');
+        foreach ($availableFields as $index => $field) {
+            $encrypted = in_array($field, $currentEncrypted) ? " [ENCRYPTED]" : "";
+            $this->output("  " . ($index + 1) . ". {$field}{$encrypted}");
+        }
+        $this->output("");
+        
+        // Ask user to select fields for encryption
+        $this->output("Enter field numbers to encrypt (comma-separated, e.g., 1,3,5) or 'none' to clear all:");
+        $selection = $this->ask("Fields to encrypt", "none");
+        
+        $newEncrypted = [];
+        if ($selection !== 'none' && !empty($selection)) {
+            $selectedNumbers = array_map('trim', explode(',', $selection));
+            foreach ($selectedNumbers as $num) {
+                $index = (int)$num - 1;
+                if (isset($availableFields[$index])) {
+                    $newEncrypted[] = $availableFields[$index];
+                }
+            }
+        }
+        
+        // Update the controller with new encryption configuration
+        $this->updateControllerEncryption($controllerFile, $newEncrypted);
+        
+        $this->output("✅ Encryption configuration updated!", 'green');
+        if (!empty($newEncrypted)) {
+            $this->output("Encrypted fields: " . implode(', ', $newEncrypted), 'yellow');
+        } else {
+            $this->output("No fields will be encrypted", 'yellow');
+        }
+    }
+    
+    private function getCurrentEncryptedFields(string $controllerFile): array
+    {
+        if (!file_exists($controllerFile)) {
+            return [];
+        }
+        
+        $content = file_get_contents($controllerFile);
+        
+        // Look for the $encrypted array
+        if (preg_match('/protected\s+array\s+\$encrypted\s*=\s*\[(.*?)\];/s', $content, $matches)) {
+            $arrayContent = $matches[1];
+            preg_match_all("/'([^']+)'/", $arrayContent, $fieldMatches);
+            return $fieldMatches[1] ?? [];
+        }
+        
+        return [];
+    }
+    
+    private function getCurrentHiddenFields(string $controllerFile): array
+    {
+        if (!file_exists($controllerFile)) {
+            return [];
+        }
+        
+        $content = file_get_contents($controllerFile);
+        
+        // Look for the $hidden array
+        if (preg_match('/protected\s+array\s+\$hidden\s*=\s*\[(.*?)\];/s', $content, $matches)) {
+            $arrayContent = $matches[1];
+            preg_match_all("/'([^']+)'/", $arrayContent, $fieldMatches);
+            return $fieldMatches[1] ?? [];
+        }
+        
+        return [];
+    }
+    
+    private function updateControllerEncryption(string $controllerFile, array $encryptedFields): void
+    {
+        $content = file_get_contents($controllerFile);
+        
+        // Create the encrypted array string
+        $encryptedStr = empty($encryptedFields) ? '[]' : "['" . implode("', '", $encryptedFields) . "']";
+        
+        // Check if $encrypted array already exists
+        if (preg_match('/protected\s+array\s+\$encrypted\s*=\s*\[.*?\];/s', $content)) {
+            // Replace existing encrypted array
+            $content = preg_replace(
+                '/protected\s+array\s+\$encrypted\s*=\s*\[.*?\];/s',
+                "protected array \$encrypted = {$encryptedStr};",
+                $content
+            );
+        } else {
+            // Add encrypted array after fillable array
+            if (preg_match('/protected\s+array\s+\$fillable\s*=\s*\[.*?\];/s', $content, $matches, PREG_OFFSET_CAPTURE)) {
+                $insertPos = $matches[0][1] + strlen($matches[0][0]);
+                $content = substr_replace($content, "\n    protected array \$encrypted = {$encryptedStr};", $insertPos, 0);
+            }
+        }
+        
+        // Also add hidden array if it doesn't exist
+        if (!preg_match('/protected\s+array\s+\$hidden\s*=\s*\[.*?\];/s', $content)) {
+            if (preg_match('/protected\s+array\s+\$encrypted\s*=\s*\[.*?\];/s', $content, $matches, PREG_OFFSET_CAPTURE)) {
+                $insertPos = $matches[0][1] + strlen($matches[0][0]);
+                $content = substr_replace($content, "\n    protected array \$hidden = [];", $insertPos, 0);
+            }
+        }
+        
+        file_put_contents($controllerFile, $content);
     }
 }

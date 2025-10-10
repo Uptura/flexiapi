@@ -33,6 +33,31 @@
             ],
             "created_at": "2025-10-10 09:16:53",
             "controller": "UsersController"
+        },
+        "products": {
+            "table": "products",
+            "columns": [
+                {
+                    "name": "Name",
+                    "type": "VARCHAR(255)",
+                    "required": true,
+                    "unique": true
+                },
+                {
+                    "name": "Price",
+                    "type": "y",
+                    "required": true,
+                    "unique": true
+                },
+                {
+                    "name": "Description",
+                    "type": "y",
+                    "required": true,
+                    "unique": true
+                }
+            ],
+            "created_at": "2025-10-10 11:12:49",
+            "controller": "ProductsController"
         }
     }
 }

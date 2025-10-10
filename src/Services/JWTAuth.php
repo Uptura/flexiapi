@@ -16,7 +16,7 @@ class JWTAuth
 
     public function __construct(array $config, MySQLAdapter $db)
     {
-        $this->secretKey = $config['jwt']['secret_key'] ?? throw new \InvalidArgumentException('JWT secret key is required');
+        $this->secretKey = $config['jwt']['secret'] ?? throw new \InvalidArgumentException('JWT secret key is required');
         $this->algorithm = $config['jwt']['algorithm'] ?? 'HS256';
         $this->expirationTime = $config['jwt']['expiration'] ?? 3600; // 1 hour default
         $this->db = $db;
@@ -116,12 +116,12 @@ class JWTAuth
     }
 
     /**
-     * Extract token from Authorization header
+     * Extract token from Auth-x header
      */
     public function extractTokenFromHeader(): ?string
     {
         $headers = getallheaders();
-        $authHeader = $headers['Authorization'] ?? $headers['authorization'] ?? null;
+        $authHeader = $headers['Auth-x'] ?? $headers['auth-x'] ?? null;
         
         if ($authHeader && preg_match('/Bearer\s+(.*)$/i', $authHeader, $matches)) {
             return $matches[1];
