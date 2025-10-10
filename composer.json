@@ -1,5 +1,5 @@
 {
-  "name": "uptura/flexiapi",
+  "name": "uptura-official/flexiapi",
   "description": "FlexiAPI - A powerful CLI-based framework for rapid REST API development with zero configuration",
   "type": "library",
   "license": "MIT",
