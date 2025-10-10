@@ -1,6 +1,6 @@
-# FlexiAPI v3.3.0 Deployment & Publishing Guide
+# FlexiAPI v3.4.0 Deployment & Publishing Guide
 
-This comprehensive guide covers deployment, publishing, and distribution of FlexiAPI Framework v3.3.0 with all features including encryption, advanced search, CORS configuration, and dynamic CLI.
+This comprehensive guide covers deployment, publishing, and distribution of FlexiAPI Framework v3.4.0 with all features including encryption, advanced search, CORS configuration, and dynamic CLI.
 
 ## 📦 Publishing to Packagist (Composer)
 
@@ -16,14 +16,14 @@ This comprehensive guide covers deployment, publishing, and distribution of Flex
 ```bash
 # Ensure all files are committed
 git add .
-git commit -m "Prepare for v3.3.0 release - Framework updates and deployment improvements"
+git commit -m "Prepare for v3.4.0 release - Framework updates and deployment improvements"
 
 # Create a release tag
-git tag -a v3.3.0 -m "FlexiAPI v3.3.0 - Stability and Deployment Improvements"
+git tag -a v3.4.0 -m "FlexiAPI v3.4.0 - Stability and Deployment Improvements"
 
 # Push to GitHub
 git push origin main
-git push origin v3.3.0
+git push origin v3.4.0
 ```
 
 #### 2. Validate Package Structure
@@ -39,7 +39,7 @@ composer dump-autoload
 composer install --no-dev
 
 # Test new CLI features
-flexiapi --version  # Should show v3.3.0
+flexiapi --version  # Should show v3.4.0
 flexiapi cors       # Test CORS configuration
 ```
 
@@ -63,12 +63,12 @@ composer global require uptura-official/flexiapi
 composer require uptura-official/flexiapi
 
 # Verify CLI availability and features
-vendor/bin/flexiapi --version       # Should show v3.3.0
+vendor/bin/flexiapi --version       # Should show v3.4.0
 vendor/bin/flexiapi cors            # Test CORS configuration
 vendor/bin/flexiapi list            # Test endpoint listing
 ```
 
-## 🚀 Installation Methods for v3.3.0
+## 🚀 Installation Methods for v3.4.0
 
 ### Method 1: Global Installation (Recommended)
 
