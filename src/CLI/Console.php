@@ -132,8 +132,28 @@ class Console
   | |   | |\\___/_/\\_\\|_|/_/  \\_\\|_|    |___|
   |_|   |_|                               
                                           
-FlexiAPI CLI v3.1.0 - Rapid API Development Framework
-", 'info');
+        $this->output("\n   _____ _           _          _____ _____ \n  |  ___| | _____  _(_)   /\\   |  __ \\_   _|\n  | |_  | |/ _ \\ \\/ /| |  /  \\  | |__) || |  \n  |  _| | |  __/>  < | | / /\\ \\ |  ___/ | |  \n  | |   | |\\___/_/\\_\\|_|/_/  \\_\\|_|    |___|\n  |_|   |_|                               \n                                          \n", 'info');
+        // Determine installed FlexiAPI version dynamically from Composer
+        $version = null;
+        if (class_exists('Composer\\InstalledVersions')) {
+            try {
+                $version = \Composer\InstalledVersions::getPrettyVersion('uptura-official/flexiapi');
+            } catch (\Throwable $e) {
+                $version = null;
+            }
+        }
+        if (!$version) {
+            // Fallback to local composer.json extra if running from source
+            $composerPath = __DIR__ . '/../../composer.json';
+            if (file_exists($composerPath)) {
+                $composerData = json_decode(file_get_contents($composerPath), true);
+                $version = $composerData['extra']['flexiapi']['framework-version'] ?? 'unknown';
+            } else {
+                $version = 'unknown';
+            }
+        }
+        $banner = "\nFlexiAPI CLI v{$version} - Rapid API Development Framework\n";
+    $this->output($banner, 'info');
 
         $this->output("USAGE:", 'header');
         $this->output("  {$this->commandPrefix} <command> [options] [arguments]");
@@ -254,8 +274,27 @@ FlexiAPI CLI v3.1.0 - Rapid API Development Framework
   | |   | |\\___/_/\\_\\|_|/_/  \\_\\|_|    |___|
   |_|   |_|                               
                                           
-FlexiAPI CLI Framework v3.1.0
-", 'info');
+        $this->output("\n   _____ _           _          _____ _____ \n  |  ___| | _____  _(_)   /\\   |  __ \\_   _|\n  | |_  | |/ _ \\ \\/ /| |  /  \\  | |__) || |  \n  |  _| | |  __/>  < | | / /\\ \\ |  ___/ | |  \n  | |   | |\\___/_/\\_\\|_|/_/  \\_\\|_|    |___|\n  |_|   |_|                               \n                                          \n", 'info');
+        // Determine installed version dynamically for the system info banner as well
+        $version = null;
+        if (class_exists('Composer\\InstalledVersions')) {
+            try {
+                $version = \Composer\InstalledVersions::getPrettyVersion('uptura-official/flexiapi');
+            } catch (\Throwable $e) {
+                $version = null;
+            }
+        }
+        if (!$version) {
+            $composerPath = __DIR__ . '/../../composer.json';
+            if (file_exists($composerPath)) {
+                $composerData = json_decode(file_get_contents($composerPath), true);
+                $version = $composerData['extra']['flexiapi']['framework-version'] ?? 'unknown';
+            } else {
+                $version = 'unknown';
+            }
+        }
+        $banner = "\nFlexiAPI CLI Framework v{$version}\n";
+        $this->output($banner, 'info');
         
         $this->output("📋 System Information:", 'header');
         $this->output("  PHP Version: " . phpversion());

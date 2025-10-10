@@ -1,6 +1,6 @@
-# FlexiAPI v3.0.0 Deployment & Publishing Guide
+# FlexiAPI v3.2.0 Deployment & Publishing Guide
 
-This comprehensive guide covers deployment, publishing, and distribution of FlexiAPI Framework v3.0.0 with all new features including encryption, advanced search, CORS configuration, and dynamic CLI.
+This comprehensive guide covers deployment, publishing, and distribution of FlexiAPI Framework v3.2.0 with all features including encryption, advanced search, CORS configuration, and dynamic CLI.
 
 ## 📦 Publishing to Packagist (Composer)
 
@@ -16,14 +16,14 @@ This comprehensive guide covers deployment, publishing, and distribution of Flex
 ```bash
 # Ensure all files are committed
 git add .
-git commit -m "Prepare for v3.0.0 release - Complete framework with encryption, search, CORS"
+git commit -m "Prepare for v3.2.0 release - Framework updates and deployment improvements"
 
 # Create a release tag
-git tag -a v3.0.0 -m "FlexiAPI v3.0.0 - Advanced Features: Encryption, Search, CORS, Dynamic CLI"
+git tag -a v3.2.0 -m "FlexiAPI v3.2.0 - Stability and Deployment Improvements"
 
 # Push to GitHub
 git push origin main
-git push origin v3.0.0
+git push origin v3.2.0
 ```
 
 #### 2. Validate Package Structure
@@ -39,7 +39,7 @@ composer dump-autoload
 composer install --no-dev
 
 # Test new CLI features
-flexiapi --version  # Should show v3.0.0
+flexiapi --version  # Should show v3.2.0
 flexiapi cors       # Test CORS configuration
 ```
 
@@ -62,13 +62,13 @@ composer global require uptura-official/flexiapi
 # Test project installation
 composer require uptura-official/flexiapi
 
-# Verify CLI availability and new v3.0.0 features
-vendor/bin/flexiapi --version       # Should show v3.0.0
+# Verify CLI availability and features
+vendor/bin/flexiapi --version       # Should show v3.2.0
 vendor/bin/flexiapi cors            # Test CORS configuration
 vendor/bin/flexiapi list            # Test endpoint listing
 ```
 
-## 🚀 Installation Methods for v3.0.0
+## 🚀 Installation Methods for v3.2.0
 
 ### Method 1: Global Installation (Recommended)
 
@@ -82,7 +82,7 @@ export PATH="$PATH:$HOME/.composer/vendor/bin"
 # Use from anywhere with dynamic CLI detection
 flexiapi setup                      # Auto-detects global installation
 flexiapi create users               # Creates endpoints with encryption support
-flexiapi configure:cors             # New v3.0.0 CORS configuration
+flexiapi configure:cors             # CORS configuration
 ```
 
 ### Method 2: Project-specific Installation
