@@ -132,7 +132,7 @@ class Console
   | |   | |\\___/_/\\_\\|_|/_/  \\_\\|_|    |___|
   |_|   |_|                               
                                           
-FlexiAPI CLI v3.0.0 - Rapid API Development Framework
+FlexiAPI CLI v3.1.0 - Rapid API Development Framework
 ", 'info');
 
         $this->output("USAGE:", 'header');
@@ -254,7 +254,7 @@ FlexiAPI CLI v3.0.0 - Rapid API Development Framework
   | |   | |\\___/_/\\_\\|_|/_/  \\_\\|_|    |___|
   |_|   |_|                               
                                           
-FlexiAPI CLI Framework v3.0.0
+FlexiAPI CLI Framework v3.1.0
 ", 'info');
         
         $this->output("📋 System Information:", 'header');

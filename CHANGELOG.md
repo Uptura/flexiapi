@@ -5,6 +5,19 @@ All notable changes to FlexiAPI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.1.0] - 2025-10-10
+
+### 🔧 Bug Fixes & Improvements
+- **Setup Command Enhancement** - Fixed deployment issues with proper CORS configuration creation
+- **Package Deployment** - Resolved conflicts with legacy package references
+- **CLI Stability** - Improved error handling and setup process reliability
+- **Documentation Updates** - Enhanced deployment guides and troubleshooting sections
+
+### 🚀 Deployment Enhancements
+- **Clean Package Installation** - Streamlined installation process without conflicts
+- **Improved Setup Process** - Better error handling and configuration validation
+- **Package Compatibility** - Resolved composer cache and dependency conflicts
+
 ## [3.0.0] - 2025-10-10
 
 ### 🚀 Major Features

@@ -39,6 +39,9 @@ class SetupCommand extends BaseCommand
         // Create initial files
         $this->createInitialFiles();
         
+        // Create default CORS configuration
+        $this->createDefaultCorsConfig();
+        
         $this->output("\n✅ FlexiAPI setup completed successfully!\n", 'green');
         $this->showGettingStarted();
     }
@@ -166,9 +169,23 @@ require_once __DIR__ . '/../vendor/autoload.php';
 use FlexiAPI\Core\FlexiAPI;
 
 // Handle CORS
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, Authorization, X-API-Key');
+// Load CORS configuration
+$corsConfigPath = __DIR__ . '/../config/cors.php';
+if (file_exists($corsConfigPath)) {
+    $corsConfig = require $corsConfigPath;
+    
+    // Set CORS headers
+    header('Access-Control-Allow-Origin: ' . implode(', ', $corsConfig['origins']));
+    header('Access-Control-Allow-Methods: ' . implode(', ', $corsConfig['methods']));
+    header('Access-Control-Allow-Headers: ' . implode(', ', $corsConfig['headers']));
+    header('Access-Control-Allow-Credentials: ' . ($corsConfig['credentials'] ? 'true' : 'false'));
+    header('Access-Control-Max-Age: ' . $corsConfig['max_age']);
+} else {
+    // Fallback CORS headers
+    header('Access-Control-Allow-Origin: *');
+    header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+    header('Access-Control-Allow-Headers: Content-Type, Authorization, X-API-Key, Auth-x');
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
@@ -179,7 +196,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 $configPath = __DIR__ . '/../config/config.php';
 if (!file_exists($configPath)) {
     http_response_code(500);
-    echo json_encode(['error' => 'Configuration not found. Run: php bin/flexiapi setup']);
+    echo json_encode(['error' => 'Configuration not found. Run: flexiapi setup']);
     exit;
 }
 
@@ -359,5 +376,28 @@ PHP;
     private function boolToString(bool $value): string
     {
         return $value ? 'true' : 'false';
+    }
+    
+    private function createDefaultCorsConfig(): void
+    {
+        $corsConfig = <<<'PHP'
+<?php
+
+/**
+ * CORS Configuration for FlexiAPI
+ * Generated during setup
+ */
+
+return [
+    'origins' => ['*'],
+    'methods' => ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    'headers' => ['Content-Type', 'Authorization', 'X-API-Key', 'Auth-x'],
+    'credentials' => false,
+    'max_age' => 86400
+];
+PHP;
+        
+        file_put_contents('config/cors.php', $corsConfig);
+        $this->output("🌐 Default CORS configuration created", 'green');
     }
 }
