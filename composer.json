@@ -1,0 +1,79 @@
+{
+  "name": "uptura/flexiapi",
+  "description": "FlexiAPI - A powerful CLI-based framework for rapid REST API development with zero configuration",
+  "type": "library",
+  "license": "MIT",
+  "keywords": ["api", "cli", "framework", "mysql", "jwt", "rest", "crud", "rapid-development", "php8"],
+  "homepage": "https://github.com/Uptura/flexiapi",
+  "readme": "README.md",
+  "authors": [
+    {
+      "name": "Uptura Development Team",
+      "email": "dev@uptura.com",
+      "homepage": "https://uptura-tech.com",
+      "role": "Developer"
+    }
+  ],
+  "support": {
+    "issues": "https://github.com/Uptura/flexiapi/issues",
+    "source": "https://github.com/Uptura/flexiapi",
+    "docs": "https://github.com/Uptura/flexiapi#readme",
+    "email": "support@uptura-tech.com"
+  },
+  "require": {
+    "php": ">=8.0",
+    "ext-pdo": "*",
+    "ext-pdo_mysql": "*",
+    "ext-openssl": "*",
+    "ext-json": "*"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9.0",
+    "phpstan/phpstan": "^1.0"
+  },
+  "suggest": {
+    "ext-mysqli": "For enhanced MySQL performance",
+    "ext-curl": "For HTTP client functionality",
+    "ext-mbstring": "For enhanced string handling"
+  },
+  "autoload": {
+    "psr-4": {
+      "FlexiAPI\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "FlexiAPI\\Tests\\": "tests/"
+    }
+  },
+  "bin": ["bin/flexiapi"],
+  "config": {
+    "preferred-install": "dist",
+    "sort-packages": true,
+    "optimize-autoloader": true,
+    "classmap-authoritative": true
+  },
+  "scripts": {
+    "post-install-cmd": [
+      "echo 'FlexiAPI installed successfully! Run: vendor/bin/flexiapi setup'"
+    ],
+    "post-update-cmd": [
+      "echo 'FlexiAPI updated! Check changelog: vendor/bin/flexiapi version'"
+    ],
+    "test": "phpunit",
+    "analyze": "phpstan analyse src",
+    "flexiapi": "bin/flexiapi"
+  },
+  "extra": {
+    "flexiapi": {
+      "framework-version": "2.0.0",
+      "required-extensions": ["pdo", "pdo_mysql", "openssl", "json"],
+      "minimum-php": "8.0.0"
+    },
+    "branch-alias": {
+      "dev-main": "2.0.x-dev"
+    }
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true
+}

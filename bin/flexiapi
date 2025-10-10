@@ -1,0 +1,42 @@
+#!/usr/bin/env php
+<?php
+
+// FlexiAPI CLI Tool
+// Main executable for the FlexiAPI CLI framework
+
+if (php_sapi_name() !== 'cli') {
+    echo "This script can only be run from the command line.\n";
+    exit(1);
+}
+
+// Check if running from vendor/bin or direct
+$autoloadPaths = [
+    __DIR__ . '/../vendor/autoload.php',      // When installed via composer
+    __DIR__ . '/../../../autoload.php',      // When used as a dependency
+    __DIR__ . '/../autoload.php',            // Direct development
+];
+
+$autoloadFound = false;
+foreach ($autoloadPaths as $autoload) {
+    if (file_exists($autoload)) {
+        require_once $autoload;
+        $autoloadFound = true;
+        break;
+    }
+}
+
+if (!$autoloadFound) {
+    echo "Autoload file not found. Please run 'composer install'.\n";
+    exit(1);
+}
+
+use FlexiAPI\CLI\Console;
+
+try {
+    $console = new Console();
+    $exitCode = $console->run($argv);
+    exit($exitCode);
+} catch (Exception $e) {
+    echo "Error: " . $e->getMessage() . "\n";
+    exit(1);
+}
