@@ -132,7 +132,7 @@ class Console
   | |   | |\\___/_/\\_\\|_|/_/  \\_\\|_|    |___|
   |_|   |_|                               
                                           
-        $this->output("\n   _____ _           _          _____ _____ \n  |  ___| | _____  _(_)   /\\   |  __ \\_   _|\n  | |_  | |/ _ \\ \\/ /| |  /  \\  | |__) || |  \n  |  _| | |  __/>  < | | / /\\ \\ |  ___/ | |  \n  | |   | |\\___/_/\\_\\|_|/_/  \\_\\|_|    |___|\n  |_|   |_|                               \n                                          \n", 'info');
+        $this->output("   _____ _           _          _____ _____ \n  |  ___| | _____  _(_)   /\\   |  __ \\_   _|\n  | |_  | |/ _ \\ \\/ /| |  /  \\  | |__) || |  \n  |  _| | |  __/>  < | | / /\\ \\ |  ___/ | |  \n  | |   | |\\___/_/\\_\\|_|/_/  \\_\\|_|    |___|\n  |_|   |_|                               \n                                          \nFlexiAPI CLI v3.2.0 - Rapid API Development Framework\n", 'info');
         // Determine installed FlexiAPI version dynamically from Composer
         $version = null;
         if (class_exists('Composer\\InstalledVersions')) {
@@ -274,7 +274,7 @@ class Console
   | |   | |\\___/_/\\_\\|_|/_/  \\_\\|_|    |___|
   |_|   |_|                               
                                           
-        $this->output("\n   _____ _           _          _____ _____ \n  |  ___| | _____  _(_)   /\\   |  __ \\_   _|\n  | |_  | |/ _ \\ \\/ /| |  /  \\  | |__) || |  \n  |  _| | |  __/>  < | | / /\\ \\ |  ___/ | |  \n  | |   | |\\___/_/\\_\\|_|/_/  \\_\\|_|    |___|\n  |_|   |_|                               \n                                          \n", 'info');
+        $this->output("   _____ _           _          _____ _____ \n  |  ___| | _____  _(_)   /\\   |  __ \\_   _|\n  | |_  | |/ _ \\ \\/ /| |  /  \\  | |__) || |  \n  |  _| | |  __/>  < | | / /\\ \\ |  ___/ | |  \n  | |   | |\\___/_/\\_\\|_|/_/  \\_\\|_|    |___|\n  |_|   |_|                               \n                                          \nFlexiAPI CLI Framework v3.2.0\n", 'info');
         // Determine installed version dynamically for the system info banner as well
         $version = null;
         if (class_exists('Composer\\InstalledVersions')) {
