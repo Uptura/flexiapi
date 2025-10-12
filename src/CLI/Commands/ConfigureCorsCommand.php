@@ -237,6 +237,20 @@ class ConfigureCorsCommand extends BaseCommand
 
     private function getProjectRoot(): string
     {
-        return dirname(dirname(dirname(__DIR__)));
+        // Check if we're in a vendor directory (Composer installation)
+        $currentDir = dirname(__DIR__, 3); // Go to package root
+        
+        if (strpos($currentDir, 'vendor' . DIRECTORY_SEPARATOR) !== false) {
+            // We're installed via Composer, find the project root
+            $parts = explode(DIRECTORY_SEPARATOR, $currentDir);
+            $vendorIndex = array_search('vendor', $parts);
+            if ($vendorIndex !== false) {
+                // Project root is one level up from vendor
+                return implode(DIRECTORY_SEPARATOR, array_slice($parts, 0, $vendorIndex));
+            }
+        }
+        
+        // We're in development mode, use current working directory
+        return getcwd() ?: $currentDir;
     }
 }

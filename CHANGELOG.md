@@ -1,3 +1,18 @@
+## 3.7.1 - 2025-10-12
+
+### 🚨 Critical Hotfix - Composer Installation Path Resolution
+
+#### 🔧 Critical Bug Fixes
+- **Path Resolution** - Fixed hardcoded directory paths that broke endpoint discovery in Composer installations
+- **Project Root Detection** - Added intelligent detection for vendor vs development installations
+- **CORS Command** - Fixed path resolution in ConfigureCorsCommand for Composer packages
+- **Endpoint Auto-registration** - Now correctly finds user's endpoints/ directory in all installation modes
+
+#### 📋 Technical Details
+This hotfix addresses a critical issue where FlexiAPI v3.7.0 would return "Route not found" errors when installed via Composer due to hardcoded path assumptions that only worked in development mode.
+
+---
+
 ## 3.7.0 - 2025-10-12
 
 ### 🚀 Major Stability & Production Readiness Release

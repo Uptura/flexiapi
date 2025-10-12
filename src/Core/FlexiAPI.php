@@ -95,7 +95,7 @@ class FlexiAPI
      */
     private function includeLegacyRouteFiles(): void
     {
-        $endpointsDir = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'endpoints';
+        $endpointsDir = $this->getProjectRoot() . DIRECTORY_SEPARATOR . 'endpoints';
         if (!is_dir($endpointsDir)) {
             return;
         }
@@ -159,6 +159,32 @@ class FlexiAPI
     }
 
     /**
+     * Detect the correct project root directory
+     * In Composer installations: /path/to/project (where composer.json exists)
+     * In development: /path/to/flexiapi (where we are now)
+     */
+    private function getProjectRoot(): string
+    {
+        // Start from this file's directory
+        $currentDir = dirname(__DIR__, 2); // Go to package root
+        
+        // Check if we're in a vendor directory (Composer installation)
+        if (strpos($currentDir, 'vendor' . DIRECTORY_SEPARATOR) !== false) {
+            // We're installed via Composer, find the project root
+            $parts = explode(DIRECTORY_SEPARATOR, $currentDir);
+            $vendorIndex = array_search('vendor', $parts);
+            if ($vendorIndex !== false) {
+                // Project root is one level up from vendor
+                $projectRoot = implode(DIRECTORY_SEPARATOR, array_slice($parts, 0, $vendorIndex));
+                return $projectRoot;
+            }
+        }
+        
+        // We're in development mode, use current working directory
+        return getcwd() ?: $currentDir;
+    }
+
+    /**
      * Automatically discover endpoint controllers under FlexiAPI\\Endpoints
      * and register conventional CRUD routes for each.
      * This avoids manual edits and keeps Composer installs flexible.
@@ -166,12 +192,14 @@ class FlexiAPI
     private function autoRegisterEndpointControllers(): void
     {
         // Attempt to list classes by scanning endpoints directory
-        $endpointsDir = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'endpoints';
+        $endpointsDir = $this->getProjectRoot() . DIRECTORY_SEPARATOR . 'endpoints';
+        
         if (!is_dir($endpointsDir)) {
             return;
         }
 
         $files = glob($endpointsDir . DIRECTORY_SEPARATOR . '*Controller.php');
+        
         foreach ($files as $file) {
             $classBase = basename($file, '.php'); // e.g., UsersController
             $fqcn = 'FlexiAPI\\Endpoints\\' . $classBase;

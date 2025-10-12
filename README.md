@@ -1,4 +1,4 @@
-# 🚀 FlexiAPI Framework v3.7.0
+# 🚀 FlexiAPI Framework v3.7.1
 
 [![Latest Version](https://img.shields.io/packagist/v/uptura-official/flexiapi.svg)](https://packagist.org/packages/uptura-official/flexiapi)
 [![PHP Version](https://img.shields.io/packagist/php-v/uptura-official/flexiapi.svg)](https://packagist.org/packages/uptura-official/flexiapi)
@@ -27,7 +27,7 @@ flexiapi setup
 
 ### Stable Version (Recommended)
 ```bash
-composer require uptura-official/flexiapi:^3.7
+composer require uptura-official/flexiapi:^3.7.1
 flexiapi setup
 ```
 
