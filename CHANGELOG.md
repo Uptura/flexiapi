@@ -1,3 +1,9 @@
+## 3.6.0 - 2025-10-12
+
+- Auto-inclusion of `endpoints/*Routes.php` files alongside dynamic CRUD auto-registration for controllers.
+- Greater flexibility for Composer installations: endpoints are available without manual route coding.
+- Docs bumped to 3.6.0.
+
 ## 3.5.0 - 2025-10-12
 
 - Added automatic endpoint route registration: FlexiAPI now discovers controllers in `endpoints/` and registers conventional CRUD routes without manual edits.

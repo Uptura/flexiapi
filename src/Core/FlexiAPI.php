@@ -81,6 +81,27 @@ class FlexiAPI
 
         // Auto-register endpoint controllers discovered via PSR-4 in endpoints/
         $this->autoRegisterEndpointControllers();
+
+        // Auto-include all closure-based *Routes.php files in endpoints/
+        $this->includeLegacyRouteFiles();
+    }
+    /**
+     * Include all *Routes.php files in endpoints/ for legacy/custom route support
+     */
+    private function includeLegacyRouteFiles(): void
+    {
+        $endpointsDir = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'endpoints';
+        if (!is_dir($endpointsDir)) {
+            return;
+        }
+        $files = glob($endpointsDir . DIRECTORY_SEPARATOR . '*Routes.php');
+        foreach ($files as $file) {
+            // Provide $router, $db, $config in scope for included files
+            $router = $this->router;
+            $db = $this->db;
+            $config = $this->config;
+            include $file;
+        }
     }
 
     private function loadAuthRoutes(): void
