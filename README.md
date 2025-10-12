@@ -1,4 +1,4 @@
-# 🚀 FlexiAPI Framework v3.4.0
+# 🚀 FlexiAPI Framework v3.5.0
 
 [![Latest Version](https://img.shields.io/packagist/v/uptura-official/flexiapi.svg)](https://packagist.org/packages/uptura-official/flexiapi)
 [![PHP Version](https://img.shields.io/packagist/php-v/uptura-official/flexiapi.svg)](https://packagist.org/packages/uptura-official/flexiapi)
@@ -19,9 +19,15 @@
 
 ## 📦 Installation
 
-### Global Installation (Recommended)
+### Global Installation
 ```bash
 composer global require uptura-official/flexiapi
+flexiapi setup
+```
+
+### Stable Version (Recommended)
+```bash
+composer require uptura-official/flexiapi:^3.4
 flexiapi setup
 ```
 
@@ -53,9 +59,15 @@ flexiapi create:endpoint users
 # Interactive setup: define columns, data types, encryption
 ```
 
-### 3. Start Development Server
+### 3.0 Start Development Server
 ```bash
 flexiapi serve
+# Launches PHP development server with your API
+```
+
+### 3.1 PHP Server
+```bash
+php -S 127.0.0.1:8000 -t public
 # Launches PHP development server with your API
 ```
 

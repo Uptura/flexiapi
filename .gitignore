@@ -296,6 +296,7 @@ public/debug_*.php
 public/test_*.php
 public/put_test.php
 public/test.html
+public/storage/*
 debug.log
 debug_*.log
 

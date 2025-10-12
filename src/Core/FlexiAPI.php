@@ -78,23 +78,9 @@ class FlexiAPI
     {
         // Load authentication routes
         $this->loadAuthRoutes();
-        
-        // Load generated endpoint routes manually
-        // Users routes
-        $this->router->addRoute('GET', 'v1/users', 'FlexiAPI\\Endpoints\\UsersController', 'index', true);
-        $this->router->addRoute('GET', 'v1/users/search/{column}', 'FlexiAPI\\Endpoints\\UsersController', 'searchByColumn', true);
-        $this->router->addRoute('POST', 'v1/users', 'FlexiAPI\\Endpoints\\UsersController', 'store', true);
-        $this->router->addRoute('GET', 'v1/users/{id}', 'FlexiAPI\\Endpoints\\UsersController', 'show', true);
-        $this->router->addRoute('PUT', 'v1/users/{id}', 'FlexiAPI\\Endpoints\\UsersController', 'update', true);
-        $this->router->addRoute('DELETE', 'v1/users/{id}', 'FlexiAPI\\Endpoints\\UsersController', 'destroy', true);
-        
-        // Products routes
-        $this->router->addRoute('GET', 'v1/products', 'FlexiAPI\\Endpoints\\ProductsController', 'index', true);
-        $this->router->addRoute('GET', 'v1/products/search/{column}', 'FlexiAPI\\Endpoints\\ProductsController', 'searchByColumn', true);
-        $this->router->addRoute('POST', 'v1/products', 'FlexiAPI\\Endpoints\\ProductsController', 'store', true);
-        $this->router->addRoute('GET', 'v1/products/{id}', 'FlexiAPI\\Endpoints\\ProductsController', 'show', true);
-        $this->router->addRoute('PUT', 'v1/products/{id}', 'FlexiAPI\\Endpoints\\ProductsController', 'update', true);
-        $this->router->addRoute('DELETE', 'v1/products/{id}', 'FlexiAPI\\Endpoints\\ProductsController', 'destroy', true);
+
+        // Auto-register endpoint controllers discovered via PSR-4 in endpoints/
+        $this->autoRegisterEndpointControllers();
     }
 
     private function loadAuthRoutes(): void
@@ -146,5 +132,45 @@ class FlexiAPI
     public function getConfig(): array
     {
         return $this->config;
+    }
+
+    /**
+     * Automatically discover endpoint controllers under FlexiAPI\\Endpoints
+     * and register conventional CRUD routes for each.
+     * This avoids manual edits and keeps Composer installs flexible.
+     */
+    private function autoRegisterEndpointControllers(): void
+    {
+        // Attempt to list classes by scanning endpoints directory
+        $endpointsDir = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'endpoints';
+        if (!is_dir($endpointsDir)) {
+            return;
+        }
+
+        $files = glob($endpointsDir . DIRECTORY_SEPARATOR . '*Controller.php');
+        foreach ($files as $file) {
+            $classBase = basename($file, '.php'); // e.g., UsersController
+            $fqcn = 'FlexiAPI\\Endpoints\\' . $classBase;
+
+            // Ensure class is loadable
+            if (!class_exists($fqcn)) {
+                // composer dump-autoload -o may be required, but skip silently
+                continue;
+            }
+
+            // Derive endpoint path from class name (e.g., UsersController -> users)
+            $endpoint = strtolower(preg_replace('/Controller$/', '', $classBase));
+            if ($endpoint === '') {
+                continue;
+            }
+
+            // Register conventional CRUD routes
+            $this->router->addRoute('GET', "v1/{$endpoint}", $fqcn, 'index', true);
+            $this->router->addRoute('GET', "v1/{$endpoint}/search/{column}", $fqcn, 'searchByColumn', true);
+            $this->router->addRoute('POST', "v1/{$endpoint}", $fqcn, 'store', true);
+            $this->router->addRoute('GET', "v1/{$endpoint}/{id}", $fqcn, 'show', true);
+            $this->router->addRoute('PUT', "v1/{$endpoint}/{id}", $fqcn, 'update', true);
+            $this->router->addRoute('DELETE', "v1/{$endpoint}/{id}", $fqcn, 'destroy', true);
+        }
     }
 }

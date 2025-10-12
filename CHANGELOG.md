@@ -1,3 +1,9 @@
+## 3.5.0 - 2025-10-12
+
+- Added automatic endpoint route registration: FlexiAPI now discovers controllers in `endpoints/` and registers conventional CRUD routes without manual edits.
+- Improved flexibility for Composer installations; removes need to hardcode routes in `FlexiAPI.php`.
+- Minor docs updates to reflect Auth-x header usage and server start options.
+
 # Changelog
 
 All notable changes to FlexiAPI will be documented in this file.
