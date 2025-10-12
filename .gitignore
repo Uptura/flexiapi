@@ -34,26 +34,42 @@ config/keys.json
 # Generated Files & Storage
 # ================================
 
-# Generated SQL files
+# Generated endpoint files (exclude user-generated endpoints but keep framework source)
+# For framework development: Include source code but exclude user-generated dynamic content
+endpoints/*.php
+endpoints/*Routes.php
+!endpoints/.gitkeep
+
+# Generated SQL exports and schemas
 exports/*.sql
 exports/flexiapi_*.sql
 sql_exports/
 *.sql
+!sql/*.example.sql
 
 # Generated Postman collections
 postman_collections/
 *.postman_collection.json
 flexiapi_collection.json
+!postman/README.md
 
-# Storage directories
-storage/logs/
-storage/cache/
-storage/sessions/
-storage/temp/
-storage/uploads/
+# Storage directories (runtime data)
+storage/logs/*
+storage/cache/*
+storage/sessions/*
+storage/temp/*
+storage/uploads/*
+!storage/logs/.gitkeep
+!storage/cache/.gitkeep
+!storage/sessions/.gitkeep
+!storage/temp/.gitkeep
+!storage/uploads/.gitkeep
 
-# Generated endpoint files
-endpoints/
+# Rate limiting storage (runtime)
+storage/cache/rate_limits/*
+!storage/cache/rate_limits/.gitkeep
+
+# Generated schema files
 generated/
 schemas/
 

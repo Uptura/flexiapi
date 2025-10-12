@@ -43,6 +43,57 @@ class Router
     }
 
     /**
+     * Add a route with a callable handler (supports legacy closure-based route files)
+     */
+    public function addRouteHandler(string $method, string $path, callable $handler, bool $requiresAuth = false): void
+    {
+        $this->routes[] = [
+            'method' => strtoupper($method),
+            'path' => $this->normalizePath($path),
+            'controller' => null,
+            'action' => null,
+            'auth' => $requiresAuth,
+            'pattern' => $this->createPattern($path),
+            'handler' => $handler
+        ];
+    }
+
+    // Convenience helpers for legacy route files
+    public function get(string $path, callable $handler, bool $requiresAuth = true): void
+    {
+        $this->addRouteHandler('GET', $this->withVersionPrefix($path), $handler, $requiresAuth);
+    }
+
+    public function post(string $path, callable $handler, bool $requiresAuth = true): void
+    {
+        $this->addRouteHandler('POST', $this->withVersionPrefix($path), $handler, $requiresAuth);
+    }
+
+    public function put(string $path, callable $handler, bool $requiresAuth = true): void
+    {
+        $this->addRouteHandler('PUT', $this->withVersionPrefix($path), $handler, $requiresAuth);
+    }
+
+    public function delete(string $path, callable $handler, bool $requiresAuth = true): void
+    {
+        $this->addRouteHandler('DELETE', $this->withVersionPrefix($path), $handler, $requiresAuth);
+    }
+
+    /**
+     * Ensure a path includes the API version prefix (v1/...) to match incoming URIs after /api is stripped.
+     */
+    private function withVersionPrefix(string $path): string
+    {
+        $p = $this->normalizePath($path);
+        // If path already starts with v<number>/, leave it as-is
+        if (preg_match('/^v\d+\//', $p)) {
+            return $p;
+        }
+        // Prepend v1 by default
+        return 'v1/' . $p;
+    }
+
+    /**
      * Route a request to the appropriate controller
      */
     public function route(string $method, string $path): void
@@ -61,8 +112,20 @@ class Router
                 // Extract parameters from URL
                 $params = $this->extractParams($matches);
 
-                // Instantiate controller and call action
-                $this->callController($route['controller'], $route['action'], $params);
+                // If a callable handler is present, invoke it; else call controller/action
+                if (isset($route['handler']) && is_callable($route['handler'])) {
+                    // Pass named params if present; support both signatures
+                    $handler = $route['handler'];
+                    // If the route has an {id} param and handler expects one, pass it
+                    if (isset($params['id'])) {
+                        $handler((int)$params['id']);
+                    } else {
+                        $handler();
+                    }
+                } else {
+                    // Instantiate controller and call action
+                    $this->callController($route['controller'], $route['action'], $params);
+                }
                 return;
             }
         }
@@ -129,148 +192,25 @@ class Router
      */
     private function checkJWTAuth(): bool
     {
-        // Get headers using multiple methods for better compatibility
-        $authHeader = $this->getAuthHeader();
+        $headers = getallheaders();
+        
+        // Check both Authorization and Auth-x headers
+        $authHeader = $headers['Authorization'] ?? $headers['Auth-x'] ?? $headers['auth-x'] ?? '';
 
         if (!str_starts_with($authHeader, 'Bearer ')) {
-            // Debug: log non-Bearer headers for PUT
-            if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
-                error_log("PUT: Auth header found but not Bearer format: '$authHeader'");
-            }
             return false;
         }
 
         $token = substr($authHeader, 7);
         
-        // Debug: log token validation for PUT
-        if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
-            error_log("PUT: Attempting to validate token: " . substr($token, 0, 20) . "...");
-        }
-        
         try {
             $payload = $this->jwtAuth->validateToken($token);
             // Store user info in globals for access in controllers
             $GLOBALS['authenticated_user'] = $payload;
-            
-            if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
-                error_log("PUT: JWT validation successful");
-            }
             return true;
         } catch (\Exception $e) {
-            if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
-                error_log("PUT: JWT validation failed: " . $e->getMessage());
-            }
             return false;
         }
-    }
-
-    /**
-     * Get Auth header using multiple methods for better compatibility
-     */
-    private function getAuthHeader(): string
-    {
-        $method = $_SERVER['REQUEST_METHOD'] ?? 'UNKNOWN';
-        
-        // Special handling for PUT requests - they might have different header parsing
-        if ($method === 'PUT') {
-            return $this->getPutAuthHeader();
-        }
-        
-        // For other methods, use standard approach
-        return $this->getStandardAuthHeader();
-    }
-
-    /**
-     * Get auth header specifically for PUT requests
-     */
-    private function getPutAuthHeader(): string
-    {
-        // Method 1: Check all possible $_SERVER variations for PUT
-        $serverKeys = [
-            'HTTP_AUTHORIZATION',
-            'HTTP_AUTH_X', 
-            'REDIRECT_HTTP_AUTHORIZATION',
-            'REDIRECT_HTTP_AUTH_X',
-            'HTTP_X_AUTH'
-        ];
-        
-        foreach ($serverKeys as $key) {
-            if (isset($_SERVER[$key]) && !empty($_SERVER[$key])) {
-                return $_SERVER[$key];
-            }
-        }
-        
-        // Method 2: Try getallheaders with case variations
-        if (function_exists('getallheaders')) {
-            $headers = getallheaders();
-            $authHeaders = ['Authorization', 'authorization', 'Auth-x', 'auth-x', 'AUTH-X', 'AUTHORIZATION'];
-            
-            foreach ($authHeaders as $headerName) {
-                if (isset($headers[$headerName])) {
-                    return $headers[$headerName];
-                }
-            }
-        }
-        
-        // Method 3: Parse from raw HTTP input (last resort for PUT)
-        return $this->parseAuthFromRawInput();
-    }
-
-    /**
-     * Get auth header for standard requests (GET, POST, etc.)
-     */
-    private function getStandardAuthHeader(): string
-    {
-        // Method 1: Try getallheaders() if available
-        if (function_exists('getallheaders')) {
-            $headers = getallheaders();
-            
-            // Try different case variations - PRIORITIZE STANDARD Authorization header first
-            foreach (['Authorization', 'authorization', 'Auth-x', 'auth-x', 'AUTH-X'] as $headerName) {
-                if (isset($headers[$headerName])) {
-                    return $headers[$headerName];
-                }
-            }
-        }
-        
-        // Method 2: Check $_SERVER variables
-        $serverKeys = [
-            'HTTP_AUTHORIZATION',     // Standard first
-            'HTTP_AUTH_X',
-            'REDIRECT_HTTP_AUTHORIZATION',
-            'REDIRECT_HTTP_AUTH_X'
-        ];
-        
-        foreach ($serverKeys as $key) {
-            if (isset($_SERVER[$key]) && !empty($_SERVER[$key])) {
-                return $_SERVER[$key];
-            }
-        }
-        
-        return '';
-    }
-
-    /**
-     * Parse auth header from raw HTTP input (for PUT requests)
-     */
-    private function parseAuthFromRawInput(): string
-    {
-        // This is a last resort method for PUT requests
-        // Check if we can extract headers from the raw request
-        
-        // Try to get from Content-Type or other headers that might contain auth info
-        $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
-        
-        // Look for Authorization in various forms
-        foreach ($_SERVER as $key => $value) {
-            if (stripos($key, 'AUTH') !== false || stripos($key, 'AUTHORIZATION') !== false) {
-                if (!empty($value) && stripos($value, 'Bearer') !== false) {
-                    return $value;
-                }
-            }
-        }
-        
-        return '';
     }
 
     /**

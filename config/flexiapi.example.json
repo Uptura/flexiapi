@@ -1,0 +1,38 @@
+{
+    "database": {
+        "host": "127.0.0.1",
+        "port": 3306,
+        "database": "your_database_name",
+        "username": "your_username", 
+        "password": "your_password",
+        "charset": "utf8mb4"
+    },
+    "auth": {
+        "secret_key": "change-this-64-character-secret-key-in-production-environment",
+        "token_expiration": 3600,
+        "algorithm": "HS256"
+    },
+    "rate_limiting": {
+        "enabled": true,
+        "requests_per_minute": 60,
+        "requests_per_hour": 1000
+    },
+    "encryption": {
+        "key": "change-this-32-character-key-prod"
+    },
+    "endpoints": {
+        "_example": {
+            "table": "example_table",
+            "columns": [
+                {
+                    "name": "example_column",
+                    "type": "VARCHAR(255)",
+                    "required": false,
+                    "unique": false
+                }
+            ],
+            "created_at": "2025-01-01 00:00:00",
+            "controller": "ExampleController"
+        }
+    }
+}

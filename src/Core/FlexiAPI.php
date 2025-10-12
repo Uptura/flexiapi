@@ -79,6 +79,11 @@ class FlexiAPI
         // Load authentication routes
         $this->loadAuthRoutes();
 
+        // Register dev-only debug route for route inspection
+        if (method_exists($this->router, 'registerDebugRoute')) {
+            $this->router->registerDebugRoute();
+        }
+
         // Auto-register endpoint controllers discovered via PSR-4 in endpoints/
         $this->autoRegisterEndpointControllers();
 
@@ -106,11 +111,9 @@ class FlexiAPI
 
     private function loadAuthRoutes(): void
     {
-        // Add auth routes
+        // Add default auth routes
         $this->router->addRoute('POST', 'v1/auth/generate_keys', 'FlexiAPI\\Controllers\\AuthController', 'generateKeys', false);
-        $this->router->addRoute('POST', 'v1/auth/login', 'FlexiAPI\\Controllers\\AuthController', 'login', false);
         $this->router->addRoute('POST', 'v1/auth/refresh', 'FlexiAPI\\Controllers\\AuthController', 'refresh', true);
-        $this->router->addRoute('POST', 'v1/auth/logout', 'FlexiAPI\\Controllers\\AuthController', 'logout', true);
     }
 
     private function handleCors(): void

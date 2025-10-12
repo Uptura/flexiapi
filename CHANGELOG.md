@@ -1,3 +1,34 @@
+## 3.7.0 - 2025-10-12
+
+### 🚀 Major Stability & Production Readiness Release
+
+#### ✨ New Features
+- **Enhanced .gitignore** - Proper separation of framework source code vs user-generated dynamic content
+- **Example Configuration Files** - Added `config.example.php` and `flexiapi.example.json` for clean deployments
+- **Storage Directory Structure** - Organized runtime storage with proper .gitkeep files
+- **Authentication Headers** - Fixed Auth-x header parsing alongside standard Authorization header support
+
+#### 🔧 Bug Fixes & Improvements  
+- **Router Constructor** - Fixed type hints for MySQLAdapter vs PDO compatibility
+- **JWTAuth Integration** - Corrected constructor signature and parameter passing
+- **Route Handler Support** - Added proper callable handler support for legacy route files
+- **Auto-registration** - Enhanced endpoint discovery and dynamic route registration
+- **Error Handling** - Improved undefined key checks in route processing
+
+#### 🛡️ Security & Stability
+- **Authentication Flow** - Dual JWT + API key authentication working correctly
+- **Route Protection** - All endpoints properly protected with configurable auth requirements
+- **Configuration Security** - Sensitive config files excluded from repository
+- **Production Ready** - Clean separation of development vs production concerns
+
+#### 📁 File Structure Improvements
+- User-generated endpoints properly excluded from source control
+- Framework source code properly preserved
+- Example files provided for easy setup
+- Storage directories maintained with proper structure
+
+This release makes FlexiAPI fully production-ready with proper deployment practices.
+
 ## 3.6.0 - 2025-10-12
 
 - Auto-inclusion of `endpoints/*Routes.php` files alongside dynamic CRUD auto-registration for controllers.
