@@ -22,7 +22,7 @@ if ($path !== '/' && file_exists(__DIR__ . $path)) {
 }
 
 // Handle API routes through index.php
-if (str_starts_with($path, '/api/')) {
+if (strpos($path, '/api/') === 0) {
     require_once __DIR__ . DIRECTORY_SEPARATOR . 'index.php';
     return true;
 }

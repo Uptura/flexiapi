@@ -99,6 +99,16 @@ class FlexiAPI
         if (!is_dir($endpointsDir)) {
             return;
         }
+        
+        // First, load all controller files to ensure classes are available
+        $controllerFiles = glob($endpointsDir . DIRECTORY_SEPARATOR . '*Controller.php');
+        foreach ($controllerFiles as $controllerFile) {
+            if (file_exists($controllerFile)) {
+                require_once $controllerFile;
+            }
+        }
+        
+        // Then include route files
         $files = glob($endpointsDir . DIRECTORY_SEPARATOR . '*Routes.php');
         foreach ($files as $file) {
             // Provide $router, $db, $config in scope for included files
@@ -203,6 +213,11 @@ class FlexiAPI
         foreach ($files as $file) {
             $classBase = basename($file, '.php'); // e.g., UsersController
             $fqcn = 'FlexiAPI\\Endpoints\\' . $classBase;
+
+            // Manually include the controller file before checking if class exists
+            if (file_exists($file)) {
+                require_once $file;
+            }
 
             // Ensure class is loadable
             if (!class_exists($fqcn)) {

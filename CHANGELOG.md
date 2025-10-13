@@ -1,3 +1,18 @@
+## 3.7.2 - 2025-10-13
+
+### 🚨 Critical Hotfix - Composer Autoloader Issues
+
+#### 🔧 Critical Bug Fixes
+- **Autoloader Conflicts** - Removed `FlexiAPI\\Endpoints\\` from composer.json PSR-4 mapping to prevent conflicts
+- **Manual Class Loading** - Added automatic `require_once` for user endpoint controllers before instantiation
+- **Route File Loading** - Enhanced legacy route files to load controller classes before `use` statements
+- **Composer Integration** - Improved post-install messaging with proper command paths for vendor installations
+
+#### 📋 Technical Details
+This hotfix resolves the fatal error: `Class "FlexiAPI\Endpoints\UsersController" not found` that occurred when FlexiAPI was installed via Composer. The framework now manually handles endpoint controller loading instead of relying on Composer's autoloader.
+
+---
+
 ## 3.7.1 - 2025-10-12
 
 ### 🚨 Critical Hotfix - Composer Installation Path Resolution

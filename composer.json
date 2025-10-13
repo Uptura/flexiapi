@@ -38,8 +38,7 @@
   },
   "autoload": {
     "psr-4": {
-      "FlexiAPI\\": "src/",
-      "FlexiAPI\\Endpoints\\": "endpoints/"
+      "FlexiAPI\\": "src/"
     }
   },
   "autoload-dev": {
@@ -56,10 +55,15 @@
   },
   "scripts": {
     "post-install-cmd": [
-      "echo 'FlexiAPI installed successfully! Run: vendor/bin/flexiapi setup'"
+      "echo '🚀 FlexiAPI v3.7.2 installed successfully!'",
+      "echo '📋 Next steps:'",
+      "echo '   1. Run: vendor/bin/flexiapi setup'",
+      "echo '   2. Create endpoint: vendor/bin/flexiapi create users'",
+      "echo '   3. Start server: vendor/bin/flexiapi serve'",
+      "echo '💡 Note: Endpoint controllers are auto-loaded by FlexiAPI framework'"
     ],
     "post-update-cmd": [
-      "echo 'FlexiAPI updated! Check changelog: vendor/bin/flexiapi version'"
+      "echo '✅ FlexiAPI updated! Check changelog: vendor/bin/flexiapi version'"
     ],
     "test": "phpunit",
     "analyze": "phpstan analyse src",
