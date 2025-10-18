@@ -100,7 +100,7 @@ abstract class BaseCommand
     
     protected function getConfigPath(): string
     {
-        return $this->workingDir . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'flexiapi.json';
+        return $this->workingDir . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'config.php';
     }
     
     protected function loadConfig(): array
@@ -110,42 +110,89 @@ abstract class BaseCommand
             return $this->getDefaultConfig();
         }
         
-        $config = json_decode(file_get_contents($configPath), true);
-        return $config ?: $this->getDefaultConfig();
+        // Load PHP config file instead of JSON
+        $config = require $configPath;
+        return is_array($config) ? $config : $this->getDefaultConfig();
     }
     
     protected function saveConfig(array $config): bool
     {
         $configPath = $this->getConfigPath();
-        return file_put_contents($configPath, json_encode($config, JSON_PRETTY_PRINT)) !== false;
+        
+        // Convert array to PHP format
+        $phpConfig = "<?php\n\nreturn " . $this->arrayToPhpString($config, 1) . ";\n";
+        return file_put_contents($configPath, $phpConfig) !== false;
     }
     
     protected function getDefaultConfig(): array
     {
         return [
             'database' => [
-                'host' => '127.0.0.1',
+                'host' => 'localhost',
                 'port' => 3306,
                 'database' => '',
                 'username' => '',
                 'password' => '',
                 'charset' => 'utf8mb4'
             ],
-            'auth' => [
-                'secret_key' => bin2hex(random_bytes(32)),
-                'token_expiration' => 3600,
-                'algorithm' => 'HS256'
-            ],
-            'rate_limiting' => [
-                'enabled' => true,
-                'requests_per_minute' => 60,
-                'requests_per_hour' => 1000
+            'jwt' => [
+                'secret' => bin2hex(random_bytes(32)),
+                'algorithm' => 'HS256',
+                'expiration' => 3600
             ],
             'encryption' => [
-                'key' => bin2hex(random_bytes(16))
+                'key' => bin2hex(random_bytes(32))
             ],
-            'endpoints' => []
+            'api' => [
+                'secret_key' => bin2hex(random_bytes(16)),
+                'base_url' => 'http://localhost:8000/api',
+                'version' => 'v1'
+            ],
+            'rate_limit' => [
+                'enabled' => true,
+                'requests_per_minute' => 60,
+                'storage' => 'file'
+            ],
+            'cors' => [
+                'origins' => ['*'],
+                'methods' => ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+                'headers' => ['Content-Type', 'Authorization', 'X-API-Key']
+            ]
         ];
+    }
+    
+    /**
+     * Convert array to PHP string format for config files
+     */
+    private function arrayToPhpString(array $array, int $indent = 0): string
+    {
+        $spaces = str_repeat('    ', $indent);
+        $result = "[\n";
+        
+        foreach ($array as $key => $value) {
+            $result .= $spaces . "    ";
+            
+            if (is_string($key)) {
+                $result .= "'" . addslashes($key) . "' => ";
+            }
+            
+            if (is_array($value)) {
+                $result .= $this->arrayToPhpString($value, $indent + 1);
+            } elseif (is_string($value)) {
+                $result .= "'" . addslashes($value) . "'";
+            } elseif (is_bool($value)) {
+                $result .= $value ? 'true' : 'false';
+            } elseif (is_null($value)) {
+                $result .= 'null';
+            } else {
+                $result .= $value;
+            }
+            
+            $result .= ",\n";
+        }
+        
+        $result .= $spaces . "]";
+        return $result;
     }
     
     protected function getEndpointsPath(): string
