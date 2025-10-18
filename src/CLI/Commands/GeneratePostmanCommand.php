@@ -28,7 +28,7 @@ class GeneratePostmanCommand extends BaseCommand
         
         if (empty($endpoints)) {
             $this->output("❌ No endpoints found! Create some endpoints first.", 'error');
-            $this->output("   Use: php bin/flexiapi create:endpoint <name>", 'info');
+            $this->output("   Use: flexiapi create:endpoint <name>", 'info');
             return;
         }
         

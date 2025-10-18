@@ -28,7 +28,7 @@ class ExportSqlCommand extends BaseCommand
         
         if (empty($endpoints) && !$includeAuth) {
             $this->output("❌ No endpoints found and auth tables not included!", 'error');
-            $this->output("   Use: php bin/flexiapi create:endpoint <name>", 'info');
+            $this->output("   Use: flexiapi create:endpoint <name>", 'info');
             return;
         }
         

@@ -255,7 +255,7 @@ hooks:
     build: |
         set -e
     deploy: |
-        php bin/flexiapi setup --non-interactive
+        flexiapi setup --non-interactive
 YAML;
         
         if (!is_dir('.platform')) {
@@ -323,13 +323,13 @@ YAML;
     {
         $this->output("\n🎯 Next Steps:", 'blue');
         $this->output("1. Configure your API:");
-        $this->output("   php bin/flexiapi setup", 'cyan');
+        $this->output("   flexiapi setup", 'cyan');
         $this->output("");
         $this->output("2. Create your first endpoint:");
-        $this->output("   php bin/flexiapi create users", 'cyan');
+        $this->output("   flexiapi create users", 'cyan');
         $this->output("");
         $this->output("3. Start development server:");
-        $this->output("   php bin/flexiapi serve", 'cyan');
+        $this->output("   flexiapi serve", 'cyan');
         $this->output("");
         $this->output("📚 Check README.md for detailed documentation!");
     }

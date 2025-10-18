@@ -40,7 +40,7 @@ class Console
         }
         
         // Default to development mode
-        return 'php bin/flexiapi';
+        return 'flexiapi';
     }
     
     private function registerCommands(): void
@@ -133,7 +133,7 @@ class Console
             "  | |   | |\\___/_/\\_\\|_|/_/  \\_\\|_|    |___|\n" .
             "  |_|   |_|                               \n" .
             "                                          \n" .
-            "FlexiAPI CLI v3.3.0 - Rapid API Development Framework\n",
+            "Developed by Uptura Team\n",
             'info'
         );
         // Determine installed FlexiAPI version dynamically from Composer

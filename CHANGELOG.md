@@ -163,7 +163,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Multiple Aliases** - `cors`, `config:cors` command shortcuts
 
 ### 🔧 CLI Improvements
-- **Smart Command Detection** - Shows correct command prefix (flexiapi vs vendor/bin/flexiapi vs php bin/flexiapi)
+- **Smart Command Detection** - Shows correct command prefix (flexiapi vs vendor/bin/flexiapi vs flexiapi)
 - **Enhanced Help System** - Context-aware help with proper command examples
 - **New Commands** - `configure:cors` with full CORS management
 - **Improved Aliases** - More intuitive command shortcuts

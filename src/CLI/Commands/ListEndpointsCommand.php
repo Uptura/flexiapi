@@ -29,7 +29,7 @@ class ListEndpointsCommand extends BaseCommand
         if (empty($endpoints)) {
             $this->output("❌ No endpoints found!", 'error');
             $this->output("   Create your first endpoint:", 'info');
-            $this->output("   php bin/flexiapi create:endpoint users", 'cyan');
+            $this->output("   flexiapi create:endpoint users", 'cyan');
             return;
         }
         
@@ -372,10 +372,10 @@ class ListEndpointsCommand extends BaseCommand
         
         if ($total > 0) {
             $this->output("🎯 Available Commands:", 'blue');
-            $this->output("   php bin/flexiapi update:endpoint <name>   # Modify endpoint");
-            $this->output("   php bin/flexiapi generate:postman         # Create Postman collection");
-            $this->output("   php bin/flexiapi export:sql               # Export database schema");
-            $this->output("   php bin/flexiapi serve                    # Start development server");
+            $this->output("   flexiapi update:endpoint <name>   # Modify endpoint");
+            $this->output("   flexiapi generate:postman         # Create Postman collection");
+            $this->output("   flexiapi export:sql               # Export database schema");
+            $this->output("   flexiapi serve                    # Start development server");
         }
     }
     

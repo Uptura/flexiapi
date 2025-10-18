@@ -23,7 +23,7 @@
 ```bash
 composer create-project uptura-official/flexiapi my-api-project
 cd my-api-project
-php bin/flexiapi setup
+flexiapi setup
 ```
 
 ### Global Installation
@@ -38,7 +38,12 @@ flexiapi init
 git clone https://github.com/Uptura/flexiapi.git my-api-project
 cd my-api-project  
 composer install
-php bin/flexiapi setup
+flexiapi setup
+```
+
+### Local Dev Test
+```bash
+php bin/flexiapi --command
 ```
 
 ## 🚀 Quick Start
@@ -51,13 +56,13 @@ flexiapi setup
 
 ### 2. Create Your First Endpoint
 ```bash
-php bin/flexiapi create users
+flexiapi create users
 # Interactive setup: define columns, data types, encryption
 ```
 
 ### 3. Start Development Server
 ```bash
-php bin/flexiapi serve
+flexiapi serve
 # Launches built-in development server with your API
 ```
 
@@ -95,6 +100,7 @@ FlexiAPI uses JWT tokens with a custom `Auth-x` header for enhanced security.
 ```bash
 curl -X POST http://localhost:8000/api/v1/auth/generate_keys
 ```
+To solve "Invalid secret", retrieve your JWT secret key from config.php
 
 **Response:**
 ```json
@@ -374,14 +380,14 @@ cd my-api-project
 
 2. Configure production database:
 ```bash
-php bin/flexiapi setup
+flexiapi setup
 # Enter production database credentials
 ```
 
 3. Create endpoints and export schema:
 ```bash
-php bin/flexiapi create users
-php bin/flexiapi export:sql
+flexiapi create users
+flexiapi export:sql
 ```
 
 4. Upload to server and import database:
@@ -409,7 +415,7 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 git clone https://github.com/Uptura/flexiapi.git
 cd flexiapi
 composer install
-php bin/flexiapi setup
+flexiapi setup
 ```
 
 ## 📄 License
