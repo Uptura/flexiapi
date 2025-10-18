@@ -214,7 +214,7 @@ class InitCommand extends BaseCommand
     {
         // Create Procfile for PaaS deployments (Heroku, Railway, etc.)
         $procfile = <<<'PROCFILE'
-web: php -S 0.0.0.0:$PORT -t public
+web: php -S 0.0.0.0:8080 -t public
 PROCFILE;
         
         file_put_contents('Procfile', $procfile);

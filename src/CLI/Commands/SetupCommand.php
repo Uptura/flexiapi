@@ -303,7 +303,7 @@ README;
         
         // Create Procfile for PaaS deployments (Heroku, Railway, etc.)
         $procfile = <<<'PROCFILE'
-web: php -S 0.0.0.0:$PORT -t public/app
+web: php -S 0.0.0.0:8080 -t public/app
 PROCFILE;
         
         file_put_contents('Procfile', $procfile);
