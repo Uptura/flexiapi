@@ -1,4 +1,4 @@
-# 🚀 FlexiAPI Framework v3.7.3
+# 🚀 FlexiAPI Framework
 
 [![Latest Version](https://img.shields.io/packagist/v/uptura-official/flexiapi.svg)](https://packagist.org/packages/uptura-official/flexiapi)
 [![PHP Version](https://img.shields.io/packagist/php-v/uptura-official/flexiapi.svg)](https://packagist.org/packages/uptura-official/flexiapi)
