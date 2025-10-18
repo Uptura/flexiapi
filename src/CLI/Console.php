@@ -5,6 +5,7 @@ namespace FlexiAPI\CLI;
 use FlexiAPI\CLI\Commands\CreateEndpointCommand;
 use FlexiAPI\CLI\Commands\UpdateEndpointCommand;
 use FlexiAPI\CLI\Commands\SetupCommand;
+use FlexiAPI\CLI\Commands\InitCommand;
 use FlexiAPI\CLI\Commands\GeneratePostmanCommand;
 use FlexiAPI\CLI\Commands\ExportSqlCommand;
 use FlexiAPI\CLI\Commands\ServeCommand;
@@ -47,6 +48,7 @@ class Console
         $this->commands = [
             // Full command names
             'setup' => SetupCommand::class,
+            'init' => InitCommand::class,
             'create:endpoint' => CreateEndpointCommand::class,
             'update:endpoint' => UpdateEndpointCommand::class,
             'list:endpoints' => ListEndpointsCommand::class,
@@ -56,7 +58,6 @@ class Console
             'configure:cors' => ConfigureCorsCommand::class,
             
             // Aliases
-            'init' => SetupCommand::class,
             'create' => CreateEndpointCommand::class,
             'new' => CreateEndpointCommand::class,
             'update' => UpdateEndpointCommand::class,

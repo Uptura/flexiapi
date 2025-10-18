@@ -1,0 +1,47 @@
+{
+  "name": "FlexiAPI Framework",
+  "description": "A powerful CLI-based framework for rapid REST API development with zero configuration",
+  "repository": "https://github.com/Uptura/flexiapi",
+  "keywords": ["php", "api", "rest", "framework", "cli", "mysql", "jwt", "crud"],
+  "env": {
+    "APP_KEY": {
+      "description": "Application encryption key",
+      "generator": "secret"
+    },
+    "DB_HOST": {
+      "description": "Database host",
+      "value": "localhost"
+    },
+    "DB_DATABASE": {
+      "description": "Database name",
+      "required": true
+    },
+    "DB_USERNAME": {
+      "description": "Database username",
+      "required": true
+    },
+    "DB_PASSWORD": {
+      "description": "Database password",
+      "required": true
+    },
+    "JWT_SECRET": {
+      "description": "JWT secret key for authentication",
+      "generator": "secret"
+    },
+    "API_SECRET": {
+      "description": "API secret key for key generation endpoint",
+      "generator": "secret"
+    }
+  },
+  "buildpacks": [
+    {
+      "url": "heroku/php"
+    }
+  ],
+  "addons": [
+    "jawsdb:kitefin"
+  ],
+  "scripts": {
+    "postdeploy": "php bin/flexiapi setup --non-interactive"
+  }
+}

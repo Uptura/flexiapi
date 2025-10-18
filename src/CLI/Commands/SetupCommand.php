@@ -253,26 +253,26 @@ A powerful CLI-based API development framework for rapid endpoint creation.
 
 1. **Setup the framework:**
    ```bash
-   php bin/flexiapi setup
+   flexiapi setup
    ```
 
 2. **Create your first endpoint:**
    ```bash
-   php bin/flexiapi create:endpoint users
+   flexiapi create:endpoint users
    ```
 
 3. **Start the development server:**
    ```bash
-   php -S localhost:8000 -t public
+   flexiapi serve
    ```
 
 ## Available Commands
 
-- `php bin/flexiapi setup` - Initial framework setup
-- `php bin/flexiapi create:endpoint <name>` - Create a new API endpoint
-- `php bin/flexiapi update:endpoint <name>` - Update an existing endpoint
-- `php bin/flexiapi generate:postman` - Generate Postman collection
-- `php bin/flexiapi export:sql` - Export all SQL schemas
+- `flexiapi setup` - Initial framework setup
+- `flexiapi create:endpoint <name>` - Create a new API endpoint
+- `flexiapi update:endpoint <name>` - Update an existing endpoint
+- `flexiapi generate:postman` - Generate Postman collection
+- `flexiapi export:sql` - Export all SQL schemas
 
 ## Documentation
 
@@ -301,6 +301,21 @@ README;
         
         file_put_contents('README.md', $readme);
         
+        // Create Procfile for PaaS deployments (Heroku, Railway, etc.)
+        $procfile = <<<'PROCFILE'
+web: php -S 0.0.0.0:$PORT -t public/app
+PROCFILE;
+        
+        file_put_contents('Procfile', $procfile);
+        
+        // Create .nixpacks.toml for Railway and other Nixpacks platforms
+        $nixpacks = <<<'NIXPACKS'
+[start]
+cmd = "php -S 0.0.0.0:8080 -t /app/public"
+NIXPACKS;
+        
+        file_put_contents('.nixpacks.toml', $nixpacks);
+        
         $this->output("📄 Created initial project files", 'green');
     }
     
@@ -309,16 +324,16 @@ README;
         $this->output("🎯 Getting Started Guide:", 'blue');
         $this->output("");
         $this->output("1. Create your first endpoint:");
-        $this->output("   php bin/flexiapi create:endpoint users", 'cyan');
+        $this->output("   flexiapi create:endpoint users", 'cyan');
         $this->output("");
         $this->output("2. Start the development server:");
-        $this->output("   php -S localhost:8000 -t public", 'cyan');
+        $this->output("   flexiapi serve", 'cyan');
         $this->output("");
         $this->output("3. Test your API:");
         $this->output("   curl http://localhost:8000/api/v1/users", 'cyan');
         $this->output("");
         $this->output("4. Generate Postman collection:");
-        $this->output("   php bin/flexiapi generate:postman", 'cyan');
+        $this->output("   flexiapi generate:postman", 'cyan');
         $this->output("");
         $this->output("📚 Check README.md for detailed documentation!");
         $this->output("");

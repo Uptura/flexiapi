@@ -1,4 +1,4 @@
-# 🚀 FlexiAPI Framework v3.7.2
+# 🚀 FlexiAPI Framework v3.7.3
 
 [![Latest Version](https://img.shields.io/packagist/v/uptura-official/flexiapi.svg)](https://packagist.org/packages/uptura-official/flexiapi)
 [![PHP Version](https://img.shields.io/packagist/php-v/uptura-official/flexiapi.svg)](https://packagist.org/packages/uptura-official/flexiapi)
@@ -19,28 +19,24 @@
 
 ## 📦 Installation
 
+### Create New Project (Recommended)
+```bash
+composer create-project uptura-official/flexiapi my-api-project
+cd my-api-project
+php bin/flexiapi setup
+```
+
 ### Global Installation
 ```bash
 composer global require uptura-official/flexiapi
-flexiapi setup
+mkdir my-api && cd my-api
+flexiapi init
 ```
 
-### Stable Version (Recommended)
+### Manual Setup
 ```bash
-composer require uptura-official/flexiapi:^3.7.1
-flexiapi setup
-```
-
-### Local Installation
-```bash
-composer require uptura-official/flexiapi
-vendor/bin/flexiapi setup
-```
-
-### Development Installation
-```bash
-git clone https://github.com/Uptura/flexiapi.git
-cd flexiapi
+git clone https://github.com/Uptura/flexiapi.git my-api-project
+cd my-api-project  
 composer install
 php bin/flexiapi setup
 ```
@@ -55,20 +51,14 @@ flexiapi setup
 
 ### 2. Create Your First Endpoint
 ```bash
-flexiapi create:endpoint users
+php bin/flexiapi create users
 # Interactive setup: define columns, data types, encryption
 ```
 
-### 3.0 Start Development Server
+### 3. Start Development Server
 ```bash
-flexiapi serve
-# Launches PHP development server with your API
-```
-
-### 3.1 PHP Server
-```bash
-php -S 127.0.0.1:8000 -t public
-# Launches PHP development server with your API
+php bin/flexiapi serve
+# Launches built-in development server with your API
 ```
 
 ### 4. Test Your API
@@ -268,9 +258,13 @@ your-api/
 │   └── FlexiAPI_Schema_Latest.sql  # Unified schema export
 ├── public/
 │   └── index.php           # API entry point
-└── storage/
-    ├── logs/               # Application logs
-    └── cache/              # Rate limiting cache
+├── storage/
+│   ├── logs/               # Application logs
+│   └── cache/              # Rate limiting cache
+├── Procfile                # Heroku deployment config
+├── .nixpacks.toml          # Railway/Nixpacks deployment config
+├── app.json                # Heroku Button configuration
+└── .platform.app.yaml     # Platform.sh deployment config
 ```
 
 ## 🔄 API Response Format
@@ -344,29 +338,66 @@ flexiapi export:sql
 
 ## 🚀 Deployment
 
-### Production Setup
-1. Install on production server:
+### Platform as a Service (PaaS) - One-Click Deploy
+
+#### Heroku
+[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+
+FlexiAPI includes a `Procfile` for seamless Heroku deployment:
+```
+web: php -S 0.0.0.0:$PORT -t public
+```
+
+#### Railway
+FlexiAPI includes `.nixpacks.toml` for Railway's Nixpacks builder:
+```toml
+[start]
+cmd = "php -S 0.0.0.0:8080 -t /app/public"
+```
+
+Deploy steps:
 ```bash
-composer global require uptura-official/flexiapi
+# Connect your GitHub repo to Railway
+# Railway auto-detects .nixpacks.toml and Procfile
+# Deploys automatically
+```
+
+#### Platform.sh
+Includes `.platform.app.yaml` for Platform.sh deployment.
+
+### Traditional Server Setup
+1. Create new project:
+```bash
+composer create-project uptura-official/flexiapi my-api-project
+cd my-api-project
 ```
 
 2. Configure production database:
 ```bash
-flexiapi setup
+php bin/flexiapi setup
 # Enter production database credentials
 ```
 
-3. Deploy your endpoint files:
+3. Create endpoints and export schema:
 ```bash
-# Copy your development files to production
-cp -r endpoints/ /var/www/your-api/
-cp -r sql/ /var/www/your-api/
-cp config/cors.php /var/www/your-api/config/
+php bin/flexiapi create users
+php bin/flexiapi export:sql
 ```
 
-4. Import database schema:
+4. Upload to server and import database:
 ```bash
 mysql -u user -p database < exports/FlexiAPI_Schema_Latest.sql
+```
+
+### Environment Variables
+Set these variables for production deployment:
+```bash
+DB_HOST=your_db_host
+DB_DATABASE=your_db_name
+DB_USERNAME=your_db_user
+DB_PASSWORD=your_db_password
+JWT_SECRET=your_jwt_secret
+API_SECRET=your_api_secret
 ```
 
 ## 🤝 Contributing

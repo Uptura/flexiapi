@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 $configPath = __DIR__ . '/../config/config.php';
 if (!file_exists($configPath)) {
     http_response_code(500);
-    echo json_encode(['error' => 'Configuration not found. Run: php bin/flexiapi setup']);
+    echo json_encode(['error' => 'Configuration not found. Run: flexiapi setup']);
     exit;
 }
 

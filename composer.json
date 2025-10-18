@@ -1,7 +1,7 @@
 {
   "name": "uptura-official/flexiapi",
   "description": "FlexiAPI - A powerful CLI-based framework for rapid REST API development with zero configuration",
-  "type": "library",
+  "type": "project",
   "license": "MIT",
   "keywords": ["api", "cli", "framework", "mysql", "jwt", "rest", "crud", "rapid-development", "php8"],
   "homepage": "https://github.com/Uptura/flexiapi",
@@ -54,16 +54,27 @@
     "classmap-authoritative": true
   },
   "scripts": {
+    "post-create-project-cmd": [
+      "echo '🚀 FlexiAPI project created successfully!'",
+      "echo '📁 Project structure:'",
+      "echo '   bin/flexiapi - CLI tool'", 
+      "echo '   config/ - Configuration files'",
+      "echo '   endpoints/ - Your API endpoints'",
+      "echo '   public/ - Web server entry point'",
+      "echo '   storage/ - Logs and cache'",
+      "echo ''",
+      "echo '🎯 Quick start:'",
+      "echo '   1. php bin/flexiapi setup'",
+      "echo '   2. php bin/flexiapi create users'", 
+      "echo '   3. php bin/flexiapi serve'",
+      "echo ''",
+      "echo '📚 Documentation: README.md'"
+    ],
     "post-install-cmd": [
-      "echo '🚀 FlexiAPI v3.7.2 installed successfully!'",
-      "echo '📋 Next steps:'",
-      "echo '   1. Run: vendor/bin/flexiapi setup'",
-      "echo '   2. Create endpoint: vendor/bin/flexiapi create users'",
-      "echo '   3. Start server: vendor/bin/flexiapi serve'",
-      "echo '💡 Note: Endpoint controllers are auto-loaded by FlexiAPI framework'"
+      "echo '🚀 FlexiAPI framework ready!'"
     ],
     "post-update-cmd": [
-      "echo '✅ FlexiAPI updated! Check changelog: vendor/bin/flexiapi version'"
+      "echo '✅ FlexiAPI updated! Check changelog: bin/flexiapi version'"
     ],
     "test": "phpunit",
     "analyze": "phpstan analyse src",
@@ -71,7 +82,7 @@
   },
   "extra": {
     "flexiapi": {
-      "framework-version": "3.7.0",
+      "framework-version": "3.7.3",
       "required-extensions": ["pdo", "pdo_mysql", "openssl", "json"],
       "minimum-php": "8.0.0"
     },

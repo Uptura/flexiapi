@@ -1,3 +1,23 @@
+## 3.7.3 - 2025-10-13
+
+### 🏗️ Project Scaffolding & Installation Improvements
+
+#### 🔧 Major Changes
+- **Project Type** - Changed from `library` to `project` in composer.json for proper scaffolding
+- **Installation Method** - Now use `composer create-project uptura-official/flexiapi my-project`
+- **Root Structure** - Framework files now appear in project root, not in vendor/ subdirectory  
+- **New Init Command** - Added `flexiapi init` for global installations to scaffold new projects
+- **Improved Scripts** - Enhanced post-create-project messaging and setup guidance
+
+#### 📋 Installation Methods
+- **Project Creation**: `composer create-project uptura-official/flexiapi my-project` (Recommended)
+- **Global + Init**: `composer global require uptura-official/flexiapi` then `flexiapi init`
+- **Manual Clone**: `git clone` for development/customization
+
+This resolves the issue where FlexiAPI was buried in vendor/uptura-official/flexiapi/ instead of providing a clean project structure in the root directory.
+
+---
+
 ## 3.7.2 - 2025-10-13
 
 ### 🚨 Critical Hotfix - Composer Autoloader Issues
