@@ -174,8 +174,13 @@ class CreateEndpointCommand extends BaseCommand
     
     private function endpointExists(string $name): bool
     {
-        $config = $this->loadConfig();
-        return isset($config['endpoints'][$name]);
+        // Check if controller file exists
+        $controllerPath = $this->getEndpointsPath() . DIRECTORY_SEPARATOR . ucfirst($name) . 'Controller.php';
+        $routesPath = $this->getEndpointsPath() . DIRECTORY_SEPARATOR . $name . 'Routes.php';
+        $sqlPath = $this->getSqlPath() . DIRECTORY_SEPARATOR . $name . '.sql';
+        
+        // Endpoint exists if any of the expected files exist
+        return file_exists($controllerPath) || file_exists($routesPath) || file_exists($sqlPath);
     }
     
     private function createEndpoint(string $name, array $columns): bool

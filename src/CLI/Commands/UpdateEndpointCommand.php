@@ -47,23 +47,26 @@ class UpdateEndpointCommand extends BaseCommand
     
     private function endpointExists(string $endpointName): bool
     {
-        $controllerFile = "endpoints/" . ucfirst($endpointName) . "Controller.php";
-        $sqlFile = "sql/{$endpointName}.sql";
-        $routesFile = "endpoints/{$endpointName}Routes.php";
+        // Use proper path methods like CreateEndpointCommand
+        $controllerPath = $this->getEndpointsPath() . DIRECTORY_SEPARATOR . ucfirst($endpointName) . 'Controller.php';
+        $routesPath = $this->getEndpointsPath() . DIRECTORY_SEPARATOR . $endpointName . 'Routes.php';
+        $sqlPath = $this->getSqlPath() . DIRECTORY_SEPARATOR . $endpointName . '.sql';
         
-        return file_exists($controllerFile) && file_exists($sqlFile) && file_exists($routesFile);
+        // Endpoint exists if any of the expected files exist (not all required)
+        return file_exists($controllerPath) || file_exists($routesPath) || file_exists($sqlPath);
     }
     
     private function listAvailableEndpoints(): void
     {
         $this->output("\n📋 Available endpoints:", 'info');
         
-        if (!is_dir('endpoints')) {
+        $endpointsPath = $this->getEndpointsPath();
+        if (!is_dir($endpointsPath)) {
             $this->output("  No endpoints found.", 'yellow');
             return;
         }
         
-        $controllers = glob('endpoints/*Controller.php');
+        $controllers = glob($endpointsPath . DIRECTORY_SEPARATOR . '*Controller.php');
         if (empty($controllers)) {
             $this->output("  No endpoints found.", 'yellow');
             return;
@@ -78,7 +81,7 @@ class UpdateEndpointCommand extends BaseCommand
     
     private function getCurrentColumns(string $endpointName): array
     {
-        $sqlFile = "sql/{$endpointName}.sql";
+        $sqlFile = $this->getSqlPath() . DIRECTORY_SEPARATOR . $endpointName . '.sql';
         $content = file_get_contents($sqlFile);
         
         // Parse SQL to extract columns

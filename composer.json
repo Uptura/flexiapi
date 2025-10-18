@@ -55,20 +55,7 @@
   },
   "scripts": {
     "post-create-project-cmd": [
-      "echo '🚀 FlexiAPI project created successfully!'",
-      "echo '📁 Project structure:'",
-      "echo '   bin/flexiapi - CLI tool'", 
-      "echo '   config/ - Configuration files'",
-      "echo '   endpoints/ - Your API endpoints'",
-      "echo '   public/ - Web server entry point'",
-      "echo '   storage/ - Logs and cache'",
-      "echo ''",
-      "echo '🎯 Quick start:'",
-      "echo '   1. php bin/flexiapi setup'",
-      "echo '   2. php bin/flexiapi create users'", 
-      "echo '   3. php bin/flexiapi serve'",
-      "echo ''",
-      "echo '📚 Documentation: README.md'"
+      "echo '🚀 FlexiAPI project created successfully!'"
     ],
     "post-install-cmd": [
       "echo '🚀 FlexiAPI framework ready!'"
@@ -82,7 +69,7 @@
   },
   "extra": {
     "flexiapi": {
-      "framework-version": "3.7.3",
+      "framework-version": "3.7.4",
       "required-extensions": ["pdo", "pdo_mysql", "openssl", "json"],
       "minimum-php": "8.0.0"
     },

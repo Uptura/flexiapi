@@ -236,6 +236,7 @@ generated_docs/
 
 # Test databases
 test.db
+test-composer-install/
 *.sqlite
 *.sqlite3
 

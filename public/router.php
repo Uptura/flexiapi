@@ -31,7 +31,7 @@ if (strpos($path, '/api/') === 0) {
 if ($path === '/') {
     echo json_encode([
         'message' => 'FlexiAPI Development Server',
-        'version' => '3.7.1',
+        'version' => '3.7.4',
         'timestamp' => date('c'),
         'endpoints' => [
             'auth' => '/api/v1/auth/',
