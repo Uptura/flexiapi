@@ -42,6 +42,9 @@ class SetupCommand extends BaseCommand
         // Create default CORS configuration
         $this->createDefaultCorsConfig();
         
+        // Create user-friendly .gitignore
+        $this->createUserGitignore();
+        
         $this->output("\n✅ FlexiAPI setup completed successfully!\n", 'green');
         $this->showGettingStarted();
     }
@@ -307,6 +310,25 @@ web: php -S 0.0.0.0:8080 -t public/app
 PROCFILE;
         
         file_put_contents('Procfile', $procfile);
+
+
+        // Create Dockerfile for containerized deployments
+        $docker = <<<'DOCKERFILE'
+# FlexiAPI Dockerfile
+FROM php:8.2-cli
+WORKDIR /app
+RUN docker-php-ext-install pdo pdo_mysql
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+COPY . .
+RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+EXPOSE 8000
+# Start PHP built-in web server using the "public" folder as document root
+CMD ["php", "-S", "0.0.0.0:8000", "-t", "public"]
+DOCKERFILE;
+
+        file_put_contents('Dockerfile', $docker);        
+
+
         
         // Create .nixpacks.toml for Railway and other Nixpacks platforms
         $nixpacks = <<<'NIXPACKS'
@@ -414,5 +436,52 @@ PHP;
         
         file_put_contents('config/cors.php', $corsConfig);
         $this->output("🌐 Default CORS configuration created", 'green');
+    }
+    
+    private function createUserGitignore(): void
+    {
+        // Only create .gitignore if it doesn't exist (don't overwrite user's existing one)
+        if (file_exists('.gitignore')) {
+            return;
+        }
+        
+        $gitignore = <<<'GITIGNORE'
+# FlexiAPI Project - .gitignore
+
+# Configuration files (contains sensitive data)
+config/config.php
+.env
+.env.*
+
+# Composer
+/vendor/
+composer.lock
+
+# Storage & Cache
+storage/logs/*
+storage/cache/*
+!storage/logs/.gitkeep
+!storage/cache/.gitkeep
+
+# Generated files
+exports/
+generated/
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.log
+GITIGNORE;
+
+        file_put_contents('.gitignore', $gitignore);
+        $this->output("📁 Created project .gitignore", 'green');
     }
 }

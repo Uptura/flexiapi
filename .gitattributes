@@ -1,0 +1,25 @@
+# FlexiAPI Package Export Configuration
+# This controls what files are included when the package is installed via Composer
+
+# Exclude development and CI files from Composer packages
+/.gitignore export-ignore
+/.gitattributes export-ignore
+/tests export-ignore
+/phpunit.xml export-ignore
+/.github export-ignore
+/test_* export-ignore
+/debug_* export-ignore
+
+# Keep these files in the package
+/api export
+/src export
+/bin export
+/config export
+/public export
+/storage export
+/endpoints export
+/sql export
+/composer.json export
+/README.md export
+/LICENSE export
+/CHANGELOG.md export
