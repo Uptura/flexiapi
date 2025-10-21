@@ -277,7 +277,7 @@ class Console
             "  | |   | |\\___/_/\\_\\|_|/_/  \\_\\|_|    |___|\n" .
             "  |_|   |_|                               \n" .
             "                                          \n" .
-            "FlexiAPI CLI Framework v3.3.0\n",
+            "Developed by Uptura Technology Inc.\n",
             'info'
         );
         // Determine installed version dynamically for the system info banner as well
