@@ -2,19 +2,13 @@
 
 /**
  * CORS Configuration for FlexiAPI
- * Generated on: 2025-10-10 16:17:25
+ * Generated during setup
  */
 
 return [
-    'origins' => [
-        '*'
-    ],
-    'methods' => [
-        'GET'
-    ],
-    'headers' => [
-        'Auth-x'
-    ],
-    'credentials' => true,
+    'origins' => ['*'],
+    'methods' => ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    'headers' => ['Content-Type', 'Authorization', 'X-API-Key', 'Auth-x'],
+    'credentials' => false,
     'max_age' => 86400
 ];

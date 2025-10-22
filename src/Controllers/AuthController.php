@@ -143,11 +143,28 @@ class AuthController
                 return;
             }
 
+            // Get auth header with multiple fallbacks
             $headers = getallheaders();
-            $authHeader = $headers['Auth-x'] ?? $headers['auth-x'] ?? '';
-
-            if (!str_starts_with($authHeader, 'Bearer ')) {
-                Response::json(false, 'Invalid auth header', null, 401);
+            $authHeader = '';
+            
+            // Try multiple header name variations
+            $headerNames = ['Auth-x', 'auth-x', 'AUTH-X', 'Authorization'];
+            foreach ($headerNames as $headerName) {
+                if (isset($headers[$headerName])) {
+                    $authHeader = $headers[$headerName];
+                    break;
+                }
+            }
+            
+            // Validate Bearer token format
+            if (empty($authHeader) || substr($authHeader, 0, 7) !== 'Bearer ') {
+                Response::json(false, 'Invalid auth header format. Expected: Auth-x: Bearer <token>', null, 401, [
+                    'debug' => [
+                        'received_header' => $authHeader,
+                        'available_headers' => array_keys($headers),
+                        'expected_format' => 'Auth-x: Bearer <your_token>'
+                    ]
+                ]);
                 return;
             }
 
@@ -215,6 +232,26 @@ class AuthController
         ";
 
         $this->db->exec($sql);
+    }
+
+    /**
+     * Debug endpoint to check headers
+     * GET /api/v1/auth/debug-headers
+     */
+    public function debugHeaders(): void
+    {
+        $headers = getallheaders();
+        Response::json(true, 'Debug information', [
+            'all_headers' => $headers,
+            'auth_x_header' => $headers['Auth-x'] ?? null,
+            'auth_x_lower' => $headers['auth-x'] ?? null,
+            'authorization_header' => $headers['Authorization'] ?? null,
+            'server_info' => [
+                'request_method' => $_SERVER['REQUEST_METHOD'] ?? 'Unknown',
+                'request_uri' => $_SERVER['REQUEST_URI'] ?? 'Unknown',
+                'php_version' => phpversion()
+            ]
+        ]);
     }
 
     /**

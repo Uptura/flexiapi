@@ -306,7 +306,7 @@ README;
         
         // Create Procfile for PaaS deployments (Heroku, Railway, etc.)
         $procfile = <<<'PROCFILE'
-web: php -S 0.0.0.0:8080 -t public/app
+web: php -S 0.0.0.0:8000 -t public
 PROCFILE;
         
         file_put_contents('Procfile', $procfile);
@@ -326,14 +326,36 @@ EXPOSE 8000
 CMD ["php", "-S", "0.0.0.0:8000", "-t", "public"]
 DOCKERFILE;
 
-        file_put_contents('Dockerfile', $docker);        
+        file_put_contents('Dockerfile', $docker);   
+        
+        
+
+   // gitignore Flexiapi once installed
+        $gitignore = <<<'GITIGNORE'
+# FlexiAPI .gitignore
+/sql
+sql/*
+/.env
+/.vscode
+/.idea
+/exports
+/config/config.example.php
+/config/flexiapi.example.php
+/public/storage
+/storage/logs
+/storage/cache
+/storage/uploads
+
+GITIGNORE;
+
+        file_put_contents('.gitignore', $gitignore);
 
 
         
         // Create .nixpacks.toml for Railway and other Nixpacks platforms
         $nixpacks = <<<'NIXPACKS'
 [start]
-cmd = "php -S 0.0.0.0:8080 -t /app/public"
+cmd = "php -S 0.0.0.0:8000 -t public"
 NIXPACKS;
         
         file_put_contents('.nixpacks.toml', $nixpacks);
@@ -371,27 +393,32 @@ NIXPACKS;
         $configPhp = <<<PHP
 <?php
 
+
+require_once 'loadenv.php';
+
+loadEnv(__DIR__ . '/../.env');
+
 return [
     'database' => [
-        'host' => '{$config['database']['host']}',
-        'port' => {$config['database']['port']},
-        'database' => '{$config['database']['database']}',
-        'username' => '{$config['database']['username']}',
-        'password' => '{$config['database']['password']}',
-        'charset' => '{$config['database']['charset']}'
+        'host' => getenv('DB_HOST'),
+        'port' => getenv('DB_PORT') ?? 3306,
+        'database' => getenv('DB_DATABASE'),
+        'username' => getenv('DB_USERNAME'),
+        'password' => getenv('DB_PASSWORD'),
+        'charset' => getenv('DB_CHARSET') ?? 'utf8mb4'
     ],
     'jwt' => [
-        'secret' => '{$config['jwt']['secret']}',
-        'algorithm' => '{$config['jwt']['algorithm']}',
-        'expiration' => {$config['jwt']['expiration']}
+        'secret' => getenv('JWT_SECRET'),
+        'algorithm' => getenv('JWT_ALGORITHM'),
+        'expiration' => getenv('JWT_EXPIRATION')
     ],
     'encryption' => [
-        'key' => '{$config['encryption']['key']}'
+        'key' => getenv('ENCRYPTION_KEY')
     ],
     'api' => [
-        'secret_key' => '{$config['api']['secret_key']}',
-        'base_url' => '{$config['api']['base_url']}',
-        'version' => '{$config['api']['version']}'
+        'secret_key' => getenv('API_SECRET_KEY'),
+        'base_url' => getenv('API_BASE_URL'),
+        'version' => getenv('API_VERSION')
     ],
     'rate_limit' => [
         'enabled' => {$this->boolToString($config['rate_limit']['enabled'])},
@@ -407,6 +434,22 @@ return [
 PHP;
 
         file_put_contents('config/config.php', $configPhp);
+
+//create the .env file
+$envContent = <<<ENV
+# FlexiAPI Environment Configuration
+DB_HOST={$config['database']['host']}
+DB_PORT={$config['database']['port']}
+DB_DATABASE={$config['database']['database']}
+DB_USERNAME={$config['database']['username']}
+DB_PASSWORD={$config['database']['password']}
+JWT_SECRET={$config['jwt']['secret']}
+ENCRYPTION_KEY={$config['encryption']['key']}
+API_SECRET_KEY={$config['api']['secret_key']}
+ENV;
+file_put_contents('.env', $envContent);
+
+
         $this->output("💾 Configuration saved to config/config.php", 'green');
     }
     

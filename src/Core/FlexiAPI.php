@@ -124,6 +124,7 @@ class FlexiAPI
         // Add default auth routes
         $this->router->addRoute('POST', 'v1/auth/generate_keys', 'FlexiAPI\\Controllers\\AuthController', 'generateKeys', false);
         $this->router->addRoute('POST', 'v1/auth/refresh', 'FlexiAPI\\Controllers\\AuthController', 'refresh', true);
+        $this->router->addRoute('GET', 'v1/auth/debug-headers', 'FlexiAPI\\Controllers\\AuthController', 'debugHeaders', false);
     }
 
     private function handleCors(): void

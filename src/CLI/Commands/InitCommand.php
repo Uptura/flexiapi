@@ -214,7 +214,7 @@ class InitCommand extends BaseCommand
     {
         // Create Procfile for PaaS deployments (Heroku, Railway, etc.)
         $procfile = <<<'PROCFILE'
-web: php -S 0.0.0.0:8080 -t public
+web: php -S 0.0.0.0:8000 -t public
 PROCFILE;
         
         file_put_contents('Procfile', $procfile);
@@ -236,10 +236,31 @@ DOCKERFILE;
 
         file_put_contents('Dockerfile', $docker);
 
+
+   // gitignore Flexiapi once installed
+        $gitignore = <<<'GITIGNORE'
+# FlexiAPI .gitignore
+/sql
+sql/*
+/.env
+/.vscode
+/.idea
+/exports
+/config/config.example.php
+/config/flexiapi.example.php
+/public/storage
+/storage/logs
+/storage/cache
+/storage/uploads
+
+GITIGNORE;
+
+        file_put_contents('.gitignore', $gitignore);
+
         // Create .nixpacks.toml for Railway and other Nixpacks platforms
         $nixpacks = <<<'NIXPACKS'
 [start]
-cmd = "php -S 0.0.0.0:8080 -t /app/public"
+cmd = "php -S 0.0.0.0:8000 -t public"
 NIXPACKS;
         
         file_put_contents('.nixpacks.toml', $nixpacks);
