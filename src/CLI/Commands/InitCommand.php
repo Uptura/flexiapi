@@ -252,7 +252,6 @@ sql/*
 /storage/logs
 /storage/cache
 /storage/uploads
-
 GITIGNORE;
 
         file_put_contents('.gitignore', $gitignore);

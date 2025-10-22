@@ -325,7 +325,6 @@ EXPOSE 8000
 # Start PHP built-in web server using the "public" folder as document root
 CMD ["php", "-S", "0.0.0.0:8000", "-t", "public"]
 DOCKERFILE;
-
         file_put_contents('Dockerfile', $docker);   
         
         
@@ -345,7 +344,6 @@ sql/*
 /storage/logs
 /storage/cache
 /storage/uploads
-
 GITIGNORE;
 
         file_put_contents('.gitignore', $gitignore);
