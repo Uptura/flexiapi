@@ -1,5 +1,5 @@
 <?php
-
+chdir(dirname(__DIR__)); // Force working directory to project root
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use FlexiAPI\Core\FlexiAPI;
