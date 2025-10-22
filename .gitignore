@@ -21,7 +21,7 @@ exports/*
 /endpoints/*
 endpoints/*
 
-# Configuration Examples
+# Configuration - User-generated files
 /config/config.example.php
 /config/flexiapi.example.json
 /config/config.php
