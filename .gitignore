@@ -6,6 +6,7 @@ vendor/*
 
 # Configuration
 /.env
+.env
 /.vscode
 /.idea
 
@@ -15,13 +16,27 @@ sql/*
 
 # Exports and Generated Files
 /exports
+exports/*
+
+/endpoints/*
+endpoints/*
 
 # Configuration Examples
 /config/config.example.php
-/config/flexiapi.example.php
+/config/flexiapi.example.json
+/config/config.php
+/config/cors.php
+/config/flexiapi.json
 
 # Storage Directories
-/public/storage
+/public/storage/*
+public/storage/*
 /storage/logs
 /storage/cache
 /storage/uploads
+storage/*
+
+# System Files that autogenerate onced package install
+.nixpacks.toml
+Dockerfile
+Procfile
