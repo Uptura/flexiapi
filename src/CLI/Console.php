@@ -345,7 +345,7 @@ class Console
         // Priority 3: NEVER USE Composer InstalledVersions (causes cache issues)
         // Skip entirely to avoid phantom cache problems
         
-        // Fallback: Return current version
-        return '3.7.13';
+        // Fallback: Return current version with cache-buster
+        return '3.7.14';
     }
 }
