@@ -346,6 +346,6 @@ class Console
         // Skip entirely to avoid phantom cache problems
         
         // Fallback: Return current version with cache-buster
-        return '3.7.14';
+        return '3.7.15';
     }
 }

@@ -48,15 +48,14 @@
   },
   "bin": ["bin/flexiapi"],
   "config": {
-    "preferred-install": "source",
+    "preferred-install": "dist",
     "sort-packages": true,
-    "optimize-autoloader": false,
-    "classmap-authoritative": false,
-    "cache-ttl": 0,
-    "cache-files-ttl": 0,
-    "cache-repo-ttl": 0,
-    "cache-vcs-ttl": 0,
-    "cache-read-only": false
+    "optimize-autoloader": true,
+    "classmap-authoritative": true,
+    "cache-ttl": 300,
+    "cache-files-ttl": 300,
+    "cache-repo-ttl": 15,
+    "cache-vcs-ttl": 300
   },
   "scripts": {
     "post-install-cmd": [
@@ -72,11 +71,11 @@
   },
   "extra": {
     "flexiapi": {
-      "framework-version": "3.7.14",
+      "framework-version": "3.7.15",
       "required-extensions": ["pdo", "pdo_mysql", "openssl", "json"],
       "minimum-php": "8.0.0",
-      "cache-buster": "2025-10-24-final-fix",
-      "build-timestamp": "2025-10-24T23:00:00Z"
+      "cache-buster": "2025-10-24-FAST-fix",
+      "build-timestamp": "2025-10-24T23:30:00Z"
     },
     "branch-alias": {
       "dev-main": "3.7.x-dev"
