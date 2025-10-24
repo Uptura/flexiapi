@@ -125,38 +125,9 @@ class Console
     
     private function showHelp(): void
     {
-        $this->output(
-            "   _____ _           _          _____ _____ \n" .
-            "  |  ___| | _____  _(_)   /\\   |  __ \\_   _|\n" .
-            "  | |_  | |/ _ \\ \\/ /| |  /  \\  | |__) || |  \n" .
-            "  |  _| | |  __/>  < | | / /\\ \\ |  ___/ | |  \n" .
-            "  | |   | |\\___/_/\\_\\|_|/_/  \\_\\|_|    |___|\n" .
-            "  |_|   |_|                               \n" .
-            "                                          \n" .
-            "Developed by Uptura Team\n",
-            'info'
-        );
-        // Determine installed FlexiAPI version dynamically from Composer
-        $version = null;
-        if (class_exists('Composer\\InstalledVersions')) {
-            try {
-                $version = \Composer\InstalledVersions::getPrettyVersion('uptura-official/flexiapi');
-            } catch (\Throwable $e) {
-                $version = null;
-            }
-        }
-        if (!$version) {
-            // Fallback to local composer.json extra if running from source
-            $composerPath = __DIR__ . '/../../composer.json';
-            if (file_exists($composerPath)) {
-                $composerData = json_decode(file_get_contents($composerPath), true);
-                $version = $composerData['extra']['flexiapi']['framework-version'] ?? 'unknown';
-            } else {
-                $version = 'unknown';
-            }
-        }
-        $banner = "\nFlexiAPI CLI v{$version} - Rapid API Development Framework\n";
-    $this->output($banner, 'info');
+        $this->showBanner();
+        $version = $this->getVersion();
+        $this->output("\nFlexiAPI CLI v{$version} - Rapid API Development Framework\n", 'info');
 
         $this->output("USAGE:", 'header');
         $this->output("  {$this->commandPrefix} <command> [options] [arguments]");
@@ -269,37 +240,9 @@ class Console
     
     private function showVersion(): void
     {
-        $this->output(
-            "   _____ _           _          _____ _____ \n" .
-            "  |  ___| | _____  _(_)   /\\   |  __ \\_   _|\n" .
-            "  | |_  | |/ _ \\ \\/ /| |  /  \\  | |__) || |  \n" .
-            "  |  _| | |  __/>  < | | / /\\ \\ |  ___/ | |  \n" .
-            "  | |   | |\\___/_/\\_\\|_|/_/  \\_\\|_|    |___|\n" .
-            "  |_|   |_|                               \n" .
-            "                                          \n" .
-            "Developed by Uptura Technology Inc.\n",
-            'info'
-        );
-        // Determine installed version dynamically for the system info banner as well
-        $version = null;
-        if (class_exists('Composer\\InstalledVersions')) {
-            try {
-                $version = \Composer\InstalledVersions::getPrettyVersion('uptura-official/flexiapi');
-            } catch (\Throwable $e) {
-                $version = null;
-            }
-        }
-        if (!$version) {
-            $composerPath = __DIR__ . '/../../composer.json';
-            if (file_exists($composerPath)) {
-                $composerData = json_decode(file_get_contents($composerPath), true);
-                $version = $composerData['extra']['flexiapi']['framework-version'] ?? 'unknown';
-            } else {
-                $version = 'unknown';
-            }
-        }
-        $banner = "\nFlexiAPI CLI Framework v{$version}\n";
-        $this->output($banner, 'info');
+        $this->showBanner();
+        $version = $this->getVersion();
+        $this->output("\nFlexiAPI CLI Framework v{$version}\n", 'info');
         
         $this->output("📋 System Information:", 'header');
         $this->output("  PHP Version: " . phpversion());
@@ -359,5 +302,64 @@ class Console
     {
         $response = $this->input($message . " (y/N):");
         return strtolower($response) === 'y' || strtolower($response) === 'yes';
+    }
+    
+    private function showBanner(): void
+    {
+        $this->output(
+            "   _____ _           _          _____ _____ \n" .
+            "  |  ___| | _____  _(_)   /\\   |  __ \\_   _|\n" .
+            "  | |_  | |/ _ \\ \\/ /| |  /  \\  | |__) || |  \n" .
+            "  |  _| | |  __/>  < | | / /\\ \\ |  ___/ | |  \n" .
+            "  | |   | |\\___/_/\\_\\|_|/_/  \\_\\|_|    |___|\n" .
+            "  |_|   |_|                               \n" .
+            "                                          \n" .
+            "Developed by Uptura Development Team\n",
+            'info'
+        );
+    }
+    
+    private function getVersion(): string
+    {
+        // Priority 1: Always check local composer.json first (most reliable)
+        $composerPath = __DIR__ . '/../../composer.json';
+        if (file_exists($composerPath)) {
+            $composerData = json_decode(file_get_contents($composerPath), true);
+            if (isset($composerData['extra']['flexiapi']['framework-version'])) {
+                $version = $composerData['extra']['flexiapi']['framework-version'];
+                // Clean up version string - remove 'v' prefix if present  
+                return ltrim($version, 'v');
+            }
+        }
+        
+        // Priority 2: Try Composer InstalledVersions as fallback only
+        if (class_exists('Composer\\InstalledVersions')) {
+            try {
+                $version = \Composer\InstalledVersions::getPrettyVersion('uptura-official/flexiapi');
+                // Clean up version string - remove 'v' prefix if present
+                return ltrim($version, 'v');
+            } catch (\Throwable $e) {
+                // Continue to fallback
+            }
+        }
+        
+        // Priority 3: Check if we can find version from package root
+        $packageComposerPaths = [
+            __DIR__ . '/../../../composer.json', // vendor/uptura-official/flexiapi/
+            dirname(dirname(__DIR__)) . '/composer.json', // Different installation structure
+            getcwd() . '/composer.json' // Current working directory
+        ];
+        
+        foreach ($packageComposerPaths as $path) {
+            if (file_exists($path)) {
+                $data = json_decode(file_get_contents($path), true);
+                if (isset($data['name']) && $data['name'] === 'uptura-official/flexiapi' && 
+                    isset($data['extra']['flexiapi']['framework-version'])) {
+                    return ltrim($data['extra']['flexiapi']['framework-version'], 'v');
+                }
+            }
+        }
+        
+        return 'unknown';
     }
 }
