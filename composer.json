@@ -60,10 +60,11 @@
   "scripts": {
     "post-install-cmd": [
       "@composer clear-cache --quiet",
-      "@php -r \"if(function_exists('opcache_reset')){opcache_reset();}\""
+      "@php -r \"echo '\\n🎉 FlexiAPI successfully installed! Run \\'flexiapi setup\\' to get started.\\n\\n';\""
     ],
     "post-update-cmd": [
-      "@composer clear-cache --quiet"
+      "@composer clear-cache --quiet",
+      "@php -r \"echo '\\n✅ FlexiAPI updated successfully!\\n\\n';\""
     ],
     "test": "phpunit",
     "analyze": "phpstan analyse src",
@@ -71,7 +72,7 @@
   },
   "extra": {
     "flexiapi": {
-      "framework-version": "3.7.16",
+      "framework-version": "3.7.18",
       "required-extensions": ["pdo", "pdo_mysql", "openssl", "json"],
       "minimum-php": "8.0.0",
       "cache-buster": "2025-10-24-NUCLEAR-fix",

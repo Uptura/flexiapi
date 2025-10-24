@@ -28,11 +28,12 @@ flexiapi setup
 
 ### Create with Custom Directory Name
 ```bash
-composer create-project uptura-official/flexiapi .
+composer create-project uptura-official/flexiapi my-project
+cd my-project
 # Run this inside your desired project directory
 ```
 
-### Global Installation
+### Global Installation (Not recommended)
 ```bash
 composer global require uptura-official/flexiapi
 mkdir my-api && cd my-api
