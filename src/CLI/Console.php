@@ -321,31 +321,26 @@ class Console
     
     private function getVersion(): string
     {
-        // CACHE-PROOF VERSION DETECTION - NO Composer dependency
+        // NUCLEAR OPTION: Direct file-based detection ONLY
+        // NO Composer InstalledVersions usage whatsoever
         
-        // Priority 1: Check the FlexiAPI package composer.json (most reliable)
-        $packagePath = __DIR__ . '/../../composer.json';
-        if (file_exists($packagePath)) {
-            $data = json_decode(file_get_contents($packagePath), true);
-            if (isset($data['extra']['flexiapi']['framework-version'])) {
-                return $data['extra']['flexiapi']['framework-version'];
+        $possibleVersionSources = [
+            // Current package composer.json
+            __DIR__ . '/../../composer.json',
+            // Project composer.json (for create-project)
+            getcwd() . '/composer.json'
+        ];
+        
+        foreach ($possibleVersionSources as $path) {
+            if (file_exists($path)) {
+                $data = json_decode(file_get_contents($path), true);
+                if (isset($data['extra']['flexiapi']['framework-version'])) {
+                    return $data['extra']['flexiapi']['framework-version'];
+                }
             }
         }
         
-        // Priority 2: Check if we're in a Composer create-project setup
-        $projectPath = getcwd() . '/composer.json';
-        if (file_exists($projectPath)) {
-            $data = json_decode(file_get_contents($projectPath), true);
-            if (isset($data['name']) && $data['name'] === 'uptura-official/flexiapi' && 
-                isset($data['extra']['flexiapi']['framework-version'])) {
-                return $data['extra']['flexiapi']['framework-version'];
-            }
-        }
-        
-        // Priority 3: NEVER USE Composer InstalledVersions (causes cache issues)
-        // Skip entirely to avoid phantom cache problems
-        
-        // Fallback: Return current version with cache-buster
-        return '3.7.15';
+        // Ultimate fallback - hardcoded current version
+        return '3.7.16';
     }
 }
