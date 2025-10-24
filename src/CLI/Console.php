@@ -321,56 +321,31 @@ class Console
     
     private function getVersion(): string
     {
-        // ABSOLUTE PRIORITY: Check ALL possible composer.json locations for FlexiAPI package
-        $possiblePaths = [
-            // Development/source directory
-            __DIR__ . '/../../composer.json',
-            // Composer create-project structure  
-            getcwd() . '/composer.json',
-            // Vendor package location
-            __DIR__ . '/../../../composer.json',
-            // Alternative vendor structures
-            dirname(dirname(__DIR__)) . '/composer.json',
-            dirname(dirname(dirname(__DIR__))) . '/composer.json',
-            // Global composer installation
-            dirname(__FILE__) . '/../../composer.json'
-        ];
+        // CACHE-PROOF VERSION DETECTION - NO Composer dependency
         
-        foreach ($possiblePaths as $path) {
-            if (file_exists($path)) {
-                $data = json_decode(file_get_contents($path), true);
-                // Check if this is the FlexiAPI package composer.json
-                if (isset($data['name']) && $data['name'] === 'uptura-official/flexiapi' && 
-                    isset($data['extra']['flexiapi']['framework-version'])) {
-                    $version = $data['extra']['flexiapi']['framework-version'];
-                    return ltrim($version, 'v');
-                }
-                // Or if it's a development environment with our specific structure
-                elseif (isset($data['extra']['flexiapi']['framework-version']) && 
-                        !isset($data['name'])) {
-                    $version = $data['extra']['flexiapi']['framework-version'];
-                    return ltrim($version, 'v');
-                }
+        // Priority 1: Check the FlexiAPI package composer.json (most reliable)
+        $packagePath = __DIR__ . '/../../composer.json';
+        if (file_exists($packagePath)) {
+            $data = json_decode(file_get_contents($packagePath), true);
+            if (isset($data['extra']['flexiapi']['framework-version'])) {
+                return $data['extra']['flexiapi']['framework-version'];
             }
         }
         
-        // LAST RESORT: Try Composer InstalledVersions (but don't trust cached data)
-        if (class_exists('Composer\\InstalledVersions')) {
-            try {
-                // Force refresh by checking if the class method exists
-                if (method_exists('Composer\\InstalledVersions', 'getPrettyVersion')) {
-                    $version = \Composer\InstalledVersions::getPrettyVersion('uptura-official/flexiapi');
-                    // Only use if it's a reasonable version number
-                    if ($version && !in_array($version, ['dev-main', 'dev-master', '1.0.0'])) {
-                        return ltrim($version, 'v');
-                    }
-                }
-            } catch (\Throwable $e) {
-                // Ignore cache errors
+        // Priority 2: Check if we're in a Composer create-project setup
+        $projectPath = getcwd() . '/composer.json';
+        if (file_exists($projectPath)) {
+            $data = json_decode(file_get_contents($projectPath), true);
+            if (isset($data['name']) && $data['name'] === 'uptura-official/flexiapi' && 
+                isset($data['extra']['flexiapi']['framework-version'])) {
+                return $data['extra']['flexiapi']['framework-version'];
             }
         }
         
-        // FALLBACK: If all else fails, return a clear indicator
-        return '3.7.12+';
+        // Priority 3: NEVER USE Composer InstalledVersions (causes cache issues)
+        // Skip entirely to avoid phantom cache problems
+        
+        // Fallback: Return current version
+        return '3.7.13';
     }
 }
