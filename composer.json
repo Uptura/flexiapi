@@ -54,15 +54,6 @@
     "classmap-authoritative": true
   },
   "scripts": {
-    "post-create-project-cmd": [
-      "echo '🚀 FlexiAPI project created successfully!'"
-    ],
-    "post-install-cmd": [
-      "echo '🚀 FlexiAPI framework ready!'"
-    ],
-    "post-update-cmd": [
-      "echo '✅ Developed by Uptura Development Team'"
-    ],
     "test": "phpunit",
     "analyze": "phpstan analyse src",
     "flexiapi": "bin/flexiapi"

@@ -166,7 +166,7 @@ HTACCESS;
         // Create public/index.php entry point
         $indexPhp = <<<'PHP'
 <?php
-
+chdir(dirname(__DIR__)); // Force working directory to project root
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use FlexiAPI\Core\FlexiAPI;
@@ -244,7 +244,7 @@ RATE_LIMIT_REQUESTS=60
 CORS_ORIGINS=*
 ENV;
         
-        file_put_contents('.env.example', $envExample);
+        //file_put_contents('.env.example', $envExample);
         
         // Create README.md
         $readme = <<<'README'
@@ -329,8 +329,20 @@ DOCKERFILE;
         
         
 
-   // gitignore Flexiapi once installed
-        $gitignore = <<<'GITIGNORE'
+        // Only create .gitignore if it doesn't exist or is very basic
+        $shouldCreateGitignore = true;
+        if (file_exists('.gitignore')) {
+            $existingContent = file_get_contents('.gitignore');
+            // Don't overwrite if it already has vendor/ or comprehensive patterns
+            if (strpos($existingContent, 'vendor/') !== false || 
+                strpos($existingContent, 'Dependencies') !== false ||
+                strlen($existingContent) > 200) {
+                $shouldCreateGitignore = false;
+            }
+        }
+        
+        if ($shouldCreateGitignore) {
+            $gitignore = <<<'GITIGNORE'
 # FlexiAPI .gitignore
 /sql
 sql/*
@@ -345,8 +357,8 @@ sql/*
 /storage/cache
 /storage/uploads
 GITIGNORE;
-
-        file_put_contents('.gitignore', $gitignore);
+            file_put_contents('.gitignore', $gitignore);
+        }
 
 
         

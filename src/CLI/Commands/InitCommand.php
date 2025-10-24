@@ -133,7 +133,26 @@ class InitCommand extends BaseCommand
     
     private function findFlexiApiInstallation(): ?string
     {
-        // Check if running from global installation
+        // Priority 1: Check if we're running from a composer create-project installation
+        $currentDir = getcwd();
+        if (file_exists($currentDir . '/vendor/uptura-official/flexiapi')) {
+            return $currentDir . '/vendor/uptura-official/flexiapi';
+        }
+        
+        // Priority 2: Check if we're already in a FlexiAPI project (development)
+        if (file_exists($currentDir . '/src/CLI/Commands') && file_exists($currentDir . '/composer.json')) {
+            $composerJson = json_decode(file_get_contents($currentDir . '/composer.json'), true);
+            if (isset($composerJson['name']) && $composerJson['name'] === 'uptura-official/flexiapi') {
+                return $currentDir;
+            }
+        }
+        
+        // Priority 3: Check local vendor directory
+        if (file_exists('./vendor/uptura-official/flexiapi')) {
+            return './vendor/uptura-official/flexiapi';
+        }
+        
+        // Priority 4: Check if running from global installation
         $globalComposerHome = getenv('COMPOSER_HOME') ?: (getenv('HOME') . '/.composer');
         $globalVendor = $globalComposerHome . '/vendor/uptura-official/flexiapi';
         
@@ -141,14 +160,15 @@ class InitCommand extends BaseCommand
             return $globalVendor;
         }
         
-        // Check common global paths
+        // Priority 5: Check common global paths
         $globalPaths = [
             $_SERVER['HOME'] . '/.composer/vendor/uptura-official/flexiapi',
-            $_SERVER['USERPROFILE'] . '/AppData/Roaming/Composer/vendor/uptura-official/flexiapi'
+            $_SERVER['USERPROFILE'] . '/AppData/Roaming/Composer/vendor/uptura-official/flexiapi',
+            __DIR__ . '/../../..' // Relative from current command location
         ];
         
         foreach ($globalPaths as $path) {
-            if (is_dir($path)) {
+            if (is_dir($path) && file_exists($path . '/composer.json')) {
                 return $path;
             }
         }
