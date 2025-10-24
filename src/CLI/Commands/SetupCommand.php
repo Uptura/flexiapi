@@ -415,20 +415,20 @@ return [
         'database' => getenv('DB_DATABASE'),
         'username' => getenv('DB_USERNAME'),
         'password' => getenv('DB_PASSWORD'),
-        'charset' => getenv('DB_CHARSET') ?? 'utf8mb4'
+        'charset' => 'utf8mb4'
     ],
     'jwt' => [
         'secret' => getenv('JWT_SECRET'),
-        'algorithm' => getenv('JWT_ALGORITHM'),
-        'expiration' => getenv('JWT_EXPIRATION')
+        'algorithm' => 'HS256',
+        'expiration' => 3600
     ],
     'encryption' => [
         'key' => getenv('ENCRYPTION_KEY')
     ],
     'api' => [
         'secret_key' => getenv('API_SECRET_KEY'),
-        'base_url' => getenv('API_BASE_URL'),
-        'version' => getenv('API_VERSION')
+        'base_url' => 'http://localhost:8000/api',
+        'version' => 'v1'
     ],
     'rate_limit' => [
         'enabled' => {$this->boolToString($config['rate_limit']['enabled'])},

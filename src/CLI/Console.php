@@ -341,6 +341,6 @@ class Console
         }
         
         // Ultimate fallback - hardcoded current version
-        return '3.7.18';
+        return '3.7.19';
     }
 }
