@@ -161,11 +161,21 @@ class InitCommand extends BaseCommand
         }
         
         // Priority 5: Check common global paths
-        $globalPaths = [
-            $_SERVER['HOME'] . '/.composer/vendor/uptura-official/flexiapi',
-            $_SERVER['USERPROFILE'] . '/AppData/Roaming/Composer/vendor/uptura-official/flexiapi',
-            __DIR__ . '/../../..' // Relative from current command location
-        ];
+        $globalPaths = [];
+        
+        // Cross-platform home directory detection
+        $homeDir = $_SERVER['HOME'] ?? $_SERVER['USERPROFILE'] ?? null;
+        if ($homeDir) {
+            $globalPaths[] = $homeDir . '/.composer/vendor/uptura-official/flexiapi';
+        }
+        
+        // Windows-specific path
+        if (isset($_SERVER['USERPROFILE'])) {
+            $globalPaths[] = $_SERVER['USERPROFILE'] . '/AppData/Roaming/Composer/vendor/uptura-official/flexiapi';
+        }
+        
+        // Relative fallback
+        $globalPaths[] = __DIR__ . '/../../..'; // Relative from current command location
         
         foreach ($globalPaths as $path) {
             if (is_dir($path) && file_exists($path . '/composer.json')) {
