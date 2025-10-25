@@ -117,11 +117,109 @@ abstract class BaseCommand
     
     protected function saveConfig(array $config): bool
     {
-        $configPath = $this->getConfigPath();
+        // Save core config to .env file (database, jwt, encryption, api settings)
+        if (isset($config['database']) || isset($config['jwt']) || isset($config['encryption']) || isset($config['api'])) {
+            $this->saveEnvConfig($config);
+        }
         
-        // Convert array to PHP format
-        $phpConfig = "<?php\n\nreturn " . $this->arrayToPhpString($config, 1) . ";\n";
+        // Save config.php with getenv() template + any endpoint configurations
+        $configPath = $this->getConfigPath();
+        $phpConfig = $this->generateConfigTemplate($config);
         return file_put_contents($configPath, $phpConfig) !== false;
+    }
+    
+    private function saveEnvConfig(array $config): void
+    {
+        $envContent = '';
+        
+        // Only update .env if we have core configuration data
+        if (isset($config['database'])) {
+            $envContent .= "# FlexiAPI Environment Configuration\n";
+            $envContent .= "DB_HOST=" . ($config['database']['host'] ?? 'localhost') . "\n";
+            $envContent .= "DB_PORT=" . ($config['database']['port'] ?? '3306') . "\n";
+            $envContent .= "DB_DATABASE=" . ($config['database']['database'] ?? '') . "\n";
+            $envContent .= "DB_USERNAME=" . ($config['database']['username'] ?? '') . "\n";
+            $envContent .= "DB_PASSWORD=" . ($config['database']['password'] ?? '') . "\n";
+        }
+        
+        if (isset($config['jwt'])) {
+            $envContent .= "JWT_SECRET=" . ($config['jwt']['secret'] ?? '') . "\n";
+        }
+        
+        if (isset($config['encryption'])) {
+            $envContent .= "ENCRYPTION_KEY=" . ($config['encryption']['key'] ?? '') . "\n";
+        }
+        
+        if (isset($config['api'])) {
+            $envContent .= "API_SECRET_KEY=" . ($config['api']['secret_key'] ?? '') . "\n";
+        }
+        
+        if (!empty($envContent)) {
+            file_put_contents('.env', $envContent);
+        }
+    }
+    
+    private function generateConfigTemplate(array $config): string
+    {
+        // Always use getenv() template for core settings
+        $coreConfig = <<<'PHP'
+<?php
+
+require_once 'loadenv.php';
+
+loadEnv(__DIR__ . '/../.env');
+
+return [
+    'database' => [
+        'host' => getenv('DB_HOST'),
+        'port' => getenv('DB_PORT') ?? 3306,
+        'database' => getenv('DB_DATABASE'),
+        'username' => getenv('DB_USERNAME'),
+        'password' => getenv('DB_PASSWORD'),
+        'charset' => 'utf8mb4'
+    ],
+    'jwt' => [
+        'secret' => getenv('JWT_SECRET'),
+        'algorithm' => 'HS256',
+        'expiration' => 3600
+    ],
+    'encryption' => [
+        'key' => getenv('ENCRYPTION_KEY')
+    ],
+    'api' => [
+        'secret_key' => getenv('API_SECRET_KEY'),
+        'base_url' => 'http://localhost:8000/api',
+        'version' => 'v1'
+    ],
+    'rate_limit' => [
+        'enabled' => %s,
+        'requests_per_minute' => %d,
+        'storage' => 'file'
+    ],
+    'cors' => [
+        'origins' => %s,
+        'methods' => ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+        'headers' => ['Content-Type', 'Authorization', 'X-API-Key']
+    ]%s
+];
+PHP;
+
+        // Handle rate limiting settings
+        $rateLimitEnabled = isset($config['rate_limit']['enabled']) ? 
+            ($config['rate_limit']['enabled'] ? 'true' : 'false') : 'false';
+        $rateLimitRequests = $config['rate_limit']['requests_per_minute'] ?? 60;
+        
+        // Handle CORS origins
+        $corsOrigins = isset($config['cors']['origins']) ? 
+            $this->arrayToPhpString($config['cors']['origins']) : "['*']";
+        
+        // Handle endpoints section
+        $endpointsSection = '';
+        if (isset($config['endpoints']) && !empty($config['endpoints'])) {
+            $endpointsSection = ",\n    'endpoints' => " . $this->arrayToPhpString($config['endpoints'], 1);
+        }
+        
+        return sprintf($coreConfig, $rateLimitEnabled, $rateLimitRequests, $corsOrigins, $endpointsSection);
     }
     
     protected function getDefaultConfig(): array

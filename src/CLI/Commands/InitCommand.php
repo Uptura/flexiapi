@@ -105,7 +105,9 @@ class InitCommand extends BaseCommand
         // Copy essential files
         $filesToCopy = [
             'bin/flexiapi' => 'bin/flexiapi',
-            'public/index.php' => 'public/index.php', 
+            'public/index.php' => 'public/index.php',
+            'public/router.php' => 'public/router.php',
+            'config/loadenv.php' => 'config/loadenv.php',
             'src' => 'vendor/uptura-official/flexiapi/src',
             '.gitignore' => '.gitignore',
             'README.md' => 'README.md'

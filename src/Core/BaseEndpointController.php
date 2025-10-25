@@ -95,11 +95,11 @@ abstract class BaseEndpointController
     /**
      * GET /{endpoint}/search/{column}?q={query} - Search by specific column
      */
-    public function searchByColumn(): void
+    public function searchByColumn($params = []): void
     {
         try {
-            // Get column from URL parameter
-            $column = $_GET['column'] ?? '';
+            // Get column from URL parameter (passed by router)
+            $column = $params['column'] ?? '';
             $query = $_GET['q'] ?? '';
             
             // Pagination parameters
