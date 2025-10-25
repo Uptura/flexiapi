@@ -108,7 +108,9 @@ class InitCommand extends BaseCommand
             'public/index.php' => 'public/index.php',
             'public/router.php' => 'public/router.php',
             'config/loadenv.php' => 'config/loadenv.php',
-            'src' => 'vendor/uptura-official/flexiapi/src',
+            'config/config.example.php' => 'config/config.example.php',
+            'config/cors.php' => 'config/cors.php',
+            '.env.example' => '.env.example',
             '.gitignore' => '.gitignore',
             'README.md' => 'README.md'
         ];
@@ -116,17 +118,8 @@ class InitCommand extends BaseCommand
         foreach ($filesToCopy as $source => $dest) {
             $sourcePath = $flexiapiDir . DIRECTORY_SEPARATOR . $source;
             
-            if ($dest === 'src') {
-                // For src, we'll rely on composer autoload
-                continue;
-            }
-            
             if (file_exists($sourcePath)) {
-                if (is_dir($sourcePath)) {
-                    $this->copyDirectory($sourcePath, $dest);
-                } else {
-                    copy($sourcePath, $dest);
-                }
+                copy($sourcePath, $dest);
             }
         }
         
@@ -225,11 +218,11 @@ class InitCommand extends BaseCommand
                 'ext-pdo' => '*',
                 'ext-pdo_mysql' => '*',
                 'ext-openssl' => '*',
-                'ext-json' => '*'
+                'ext-json' => '*',
+                'uptura-official/flexiapi' => '^3.7'
             ],
             'autoload' => [
                 'psr-4' => [
-                    'FlexiAPI\\' => 'src/',
                     'FlexiAPI\\Endpoints\\' => 'endpoints/'
                 ]
             ],
