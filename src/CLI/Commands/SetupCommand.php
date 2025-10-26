@@ -178,7 +178,14 @@ if (file_exists($corsConfigPath)) {
     $corsConfig = require $corsConfigPath;
     
     // Set CORS headers
-    header('Access-Control-Allow-Origin: ' . implode(', ', $corsConfig['origins']));
+    $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+    if (in_array('*', $corsConfig['origins'])) {
+        header('Access-Control-Allow-Origin: ' . ($origin ?: '*'));
+    } elseif ($origin && in_array($origin, $corsConfig['origins'])) {
+        header('Access-Control-Allow-Origin: ' . $origin);
+    } else {
+        header('Access-Control-Allow-Origin: ' . ($corsConfig['origins'][0] ?? '*'));
+    }
     header('Access-Control-Allow-Methods: ' . implode(', ', $corsConfig['methods']));
     header('Access-Control-Allow-Headers: ' . implode(', ', $corsConfig['headers']));
     header('Access-Control-Allow-Credentials: ' . ($corsConfig['credentials'] ? 'true' : 'false'));

@@ -166,7 +166,14 @@ class ConfigureCorsCommand extends BaseCommand
         $corsSection .= "    \$corsConfig = require \$corsConfigPath;\n";
         $corsSection .= "    \n";
         $corsSection .= "    // Set CORS headers\n";
-        $corsSection .= "    header('Access-Control-Allow-Origin: ' . implode(', ', \$corsConfig['origins']));\n";
+        $corsSection .= "    \$origin = \$_SERVER['HTTP_ORIGIN'] ?? '';\n";
+        $corsSection .= "    if (in_array('*', \$corsConfig['origins'])) {\n";
+        $corsSection .= "        header('Access-Control-Allow-Origin: ' . (\$origin ?: '*'));\n";
+        $corsSection .= "    } elseif (\$origin && in_array(\$origin, \$corsConfig['origins'])) {\n";
+        $corsSection .= "        header('Access-Control-Allow-Origin: ' . \$origin);\n";
+        $corsSection .= "    } else {\n";
+        $corsSection .= "        header('Access-Control-Allow-Origin: ' . (\$corsConfig['origins'][0] ?? '*'));\n";
+        $corsSection .= "    }\n";
         $corsSection .= "    header('Access-Control-Allow-Methods: ' . implode(', ', \$corsConfig['methods']));\n";
         $corsSection .= "    header('Access-Control-Allow-Headers: ' . implode(', ', \$corsConfig['headers']));\n";
         $corsSection .= "    header('Access-Control-Allow-Credentials: ' . (\$corsConfig['credentials'] ? 'true' : 'false'));\n";

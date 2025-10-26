@@ -131,16 +131,28 @@ class FlexiAPI
     {
         $origins = $this->config['cors']['origins'] ?? ['*'];
         $methods = $this->config['cors']['methods'] ?? ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'];
-        $headers = $this->config['cors']['headers'] ?? ['Content-Type', 'Auth-x', 'X-API-Key'];
+        $headers = $this->config['cors']['headers'] ?? ['Content-Type', 'Authorization', 'X-API-Key', 'Auth-x'];
+        $credentials = $this->config['cors']['credentials'] ?? false;
+        $maxAge = $this->config['cors']['max_age'] ?? 86400;
 
+        // Handle CORS origin properly - avoid duplicate headers
         $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
-        if (in_array('*', $origins) || in_array($origin, $origins)) {
+        
+        if (in_array('*', $origins)) {
+            // If * is allowed, use the requesting origin if it exists, otherwise *
             header("Access-Control-Allow-Origin: " . ($origin ?: '*'));
+        } elseif ($origin && in_array($origin, $origins)) {
+            // If specific origin is in the whitelist, use it
+            header("Access-Control-Allow-Origin: " . $origin);
+        } else {
+            // Default to the first allowed origin if no match
+            header("Access-Control-Allow-Origin: " . ($origins[0] ?? '*'));
         }
 
         header("Access-Control-Allow-Methods: " . implode(', ', $methods));
         header("Access-Control-Allow-Headers: " . implode(', ', $headers));
-        header("Access-Control-Allow-Credentials: true");
+        header("Access-Control-Allow-Credentials: " . ($credentials ? 'true' : 'false'));
+        header("Access-Control-Max-Age: " . $maxAge);
 
         if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
             http_response_code(200);
